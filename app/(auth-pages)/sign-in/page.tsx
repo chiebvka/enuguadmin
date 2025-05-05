@@ -1,44 +1,32 @@
-import { signInAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import { Message } from "@/components/form-message";
+import LoginForm from "./components/LoginForm";
+import Image from "next/image";
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
+export default async function LoginPage(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
+  
   return (
-    <form className="flex-1 flex flex-col min-w-64">
-      <h1 className="text-2xl font-medium">Sign in</h1>
-      <p className="text-sm text-foreground">
-        Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
-          Sign up
-        </Link>
-      </p>
-      <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-        <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
-        <div className="flex justify-between items-center">
-          <Label htmlFor="password">Password</Label>
-          <Link
-            className="text-xs text-foreground underline"
-            href="/forgot-password"
-          >
-            Forgot Password?
-          </Link>
+    <div className="grid w-9/12  min-h-svh mx-auto md:grid-cols-2">
+      <div className="flex flex-col gap-4 p-6 md:p-10">
+        <a href="#" className="flex items-center gap-2 text-enugu font-medium">
+          <img src="/logo.jpeg" alt="logo" className="w-10 h-10" />
+          Ndi Enugu Scotland.
+        </a>
+        <div className="flex flex-1 flex-col justify-center gap-4 md:justify-start">
+          <div className="w-full max-w-xs">
+            <LoginForm message={searchParams} />
+          </div>
         </div>
-        <Input
-          type="password"
-          name="password"
-          placeholder="Your password"
-          required
-        />
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-          Sign in
-        </SubmitButton>
-        <FormMessage message={searchParams} />
       </div>
-    </form>
+      <div className="relative hidden lg:block">
+        <Image
+          src="https://zuelvssw8o.ufs.sh/f/u9RlmOBa19byGuCaj5tkSrU0hi93DmW2eynVJLofPl6QECFG"
+          alt="Background"
+          className="absolute inset-0 h-full w-full object-contain dark:brightness-[0.2] dark:grayscale"
+          width={1000}
+          height={1000}
+        />
+      </div>
+    </div>
   );
 }
