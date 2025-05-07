@@ -66,8 +66,20 @@ const data = {
         },
         {
           title: "Blog Tags",
-          url: "/protected/blogs/tags",
+          url: "/protected/tags",
         }
+      ],
+    },
+    {
+      title: "Tags",
+      url: "/protected/tags",
+      icon: Newspaper,
+      items: [
+        {
+          title: "Blogs & Events Tags",
+          url: "/protected/tags",
+        },
+  
       ],
     },
     {
@@ -78,6 +90,10 @@ const data = {
         {
           title: "Upcoming Events",
           url: "/protected/events",
+        },
+        {
+          title: "Events Tags",
+          url: "/protected/tags",
         },
       ],
     },

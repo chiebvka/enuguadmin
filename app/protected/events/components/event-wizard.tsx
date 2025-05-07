@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import {
   CalendarDays,
   Clock,
@@ -19,6 +20,7 @@ import {
   X,
   MapPinned,
   FileText,
+  Loader2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -50,25 +52,29 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
+import axios from 'axios'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog"
+import { Pagination } from "@/components/pagination"; // Import the reusable Pagination component
+import { getCachedEvents, invalidateEventsCache, CachedEvent } from '@/lib/eventDataCache'; // Import cache functions
 
-// Define event type
-type Event = {
-  id: number
-  title: string
-  date: Date
-  startTime: string
-  endTime: string
-  venue: string
-  summary: string
-  content?: string
-  status: "upcoming" | "past" | "draft" | "cancelled"
-}
+// Define event type - rename or ensure compatibility with CachedEvent
+// type Event = { ... } // Can be replaced by CachedEvent if identical
+// For this implementation, we'll use CachedEvent as the primary type for `events` state
 
-export default function RefinedEventsDashboard() {
+export default function RefinedEventsDashboard({ initialEvents = [] }: { initialEvents: CachedEvent[] }) {
   const [activeStep, setActiveStep] = useState(1)
   const [isCreatingEvent, setIsCreatingEvent] = useState(false)
   const [isEditingEvent, setIsEditingEvent] = useState(false)
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<CachedEvent | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -81,10 +87,17 @@ export default function RefinedEventsDashboard() {
   const [pastFilter, setPastFilter] = useState("all")
 
   // State to hold the filtered and paginated events for display
-  const [upcomingEventsToShow, setUpcomingEventsToShow] = useState<Event[]>([])
-  const [pastEventsToShow, setPastEventsToShow] = useState<Event[]>([])
+  const [upcomingEventsToShow, setUpcomingEventsToShow] = useState<CachedEvent[]>([])
+  const [pastEventsToShow, setPastEventsToShow] = useState<CachedEvent[]>([])
   const [upcomingTotalPages, setUpcomingTotalPages] = useState(1)
   const [pastTotalPages, setPastTotalPages] = useState(1)
+
+  const [events, setEvents] = useState<CachedEvent[]>(initialEvents) // Initialize with server-fetched data
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState<CachedEvent | null>(null); // Use CachedEvent
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false); // New state for form submission
 
   // Utility functions for date filtering
   // These will now be used within useEffect, ensuring client-side execution
@@ -120,251 +133,44 @@ export default function RefinedEventsDashboard() {
     return date.getMonth() === lastMonth.getMonth() && date.getFullYear() === lastMonth.getFullYear()
   }
 
-  // Sample events data (kept as is, but filtering/pagination moved to useEffect)
-  const [events, setEvents] = useState<Event[]>([
-    // Original events
-    {
-      id: 1,
-      title: "Community Development Workshop",
-      date: new Date(2025, 4, 28), // May 28, 2025
-      startTime: "09:00",
-      endTime: "16:00",
-      venue: "Delta Hotel and Suites",
-      summary: "A hands-on workshop focused on sustainable community development practices.",
-      content:
-        "Join us for a comprehensive workshop on sustainable community development. This event will cover project planning, resource allocation, community engagement strategies, and impact assessment.",
-      status: "upcoming",
-    },
-    {
-      id: 2,
-      title: "Annual General Meeting",
-      date: new Date(2025, 3, 15), // April 15, 2025
-      startTime: "10:00",
-      endTime: "14:00",
-      venue: "Organization Headquarters",
-      summary: "Annual meeting to review achievements and elect new board members.",
-      content:
-        "The Annual General Meeting will include a review of our organization's achievements over the past year, financial reports, and the election of new board members.",
-      status: "past",
-    },
-    {
-      id: 3,
-      title: "Fundraising Gala",
-      date: new Date(2025, 5, 10), // June 10, 2025
-      startTime: "18:00",
-      endTime: "22:00",
-      venue: "Grand Ballroom, Hilton Hotel",
-      summary: "Annual fundraising event with dinner, entertainment, and auction.",
-      content:
-        "Our annual Fundraising Gala is our premier event of the year. The evening will include a gourmet dinner, live entertainment, and both silent and live auctions.",
-      status: "upcoming",
-    },
-    {
-      id: 4,
-      title: "Board Meeting Q2",
-      date: new Date(2025, 5, 5), // June 5, 2025
-      startTime: "14:00",
-      endTime: "16:00",
-      venue: "Conference Room A",
-      summary: "Quarterly board meeting to discuss progress and future plans.",
-      content:
-        "This quarterly board meeting will focus on reviewing our Q2 performance, discussing ongoing projects, and planning for the next quarter.",
-      status: "draft",
-    },
-    {
-      id: 5,
-      title: "Youth Leadership Program",
-      date: new Date(2025, 2, 20), // March 20, 2025
-      startTime: "09:00",
-      endTime: "17:00",
-      venue: "Community Center",
-      summary: "A program designed to develop leadership skills in youth.",
-      content:
-        "The Youth Leadership Program aims to empower young people with essential leadership skills through workshops, team activities, and mentoring sessions.",
-      status: "past",
-    },
-    {
-      id: 6,
-      title: "Cultural Festival",
-      date: new Date(2025, 7, 15), // August 15, 2025
-      startTime: "12:00",
-      endTime: "22:00",
-      venue: "City Park",
-      summary: "Annual cultural festival celebrating diversity and heritage.",
-      content:
-        "Join us for a day of cultural celebration featuring traditional music, dance performances, food stalls, and art exhibitions from diverse communities.",
-      status: "upcoming",
-    },
-    {
-      id: 7,
-      title: "Health and Wellness Fair",
-      date: new Date(2025, 1, 10), // February 10, 2025
-      startTime: "10:00",
-      endTime: "16:00",
-      venue: "Community Sports Center",
-      summary: "A fair promoting health awareness and wellness practices.",
-      content:
-        "The Health and Wellness Fair will feature health screenings, fitness demonstrations, nutrition workshops, and information booths from local health providers.",
-      status: "past",
-    },
-    {
-      id: 8,
-      title: "Environmental Cleanup Day",
-      date: new Date(2025, 0, 25), // January 25, 2025
-      startTime: "08:00",
-      endTime: "13:00",
-      venue: "Riverside Park",
-      summary: "Community cleanup event to preserve local natural areas.",
-      content:
-        "Join fellow community members in cleaning up our beautiful Riverside Park. Equipment will be provided, and the event will conclude with a thank-you lunch for all volunteers.",
-      status: "past",
-    },
-    // Generate 80 more past events
-    ...Array.from({ length: 80 }, (_, i) => {
-      const year = 2024
-      const month = Math.floor(Math.random() * 12)
-      const day = Math.floor(Math.random() * 28) + 1
-      const eventTypes = [
-        "Workshop",
-        "Meeting",
-        "Conference",
-        "Seminar",
-        "Training",
-        "Fundraiser",
-        "Community Event",
-        "Volunteer Day",
-        "Panel Discussion",
-        "Networking Event",
-      ]
-      const venues = [
-        "Community Center",
-        "Town Hall",
-        "Public Library",
-        "Local School",
-        "City Park",
-        "Conference Center",
-        "Hotel Ballroom",
-        "University Campus",
-        "Sports Complex",
-        "Cultural Center",
-      ]
-      const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)]
-      const venue = venues[Math.floor(Math.random() * venues.length)]
+  // Calculate total filtered upcoming events count for display purposes
+  const totalFilteredUpcomingEvents = useMemo(() => {
+    return events.filter((event) => {
+        if (event.status !== "upcoming") return false;
+        switch (upcomingFilter) {
+            case "this-week": return isThisWeek(new Date(event.event_date));
+            case "this-month": return isThisMonth(new Date(event.event_date));
+            case "next-month": return isNextMonth(new Date(event.event_date));
+            default: return true;
+        }
+    }).length;
+  }, [events, upcomingFilter]); // Removed isThisWeek, isThisMonth, isNextMonth from deps as they are stable
 
-      return {
-        id: 9 + i,
-        title: `${eventType} - ${i + 1}`,
-        date: new Date(year, month, day),
-        startTime: `${Math.floor(Math.random() * 12) + 8}:00`,
-        endTime: `${Math.floor(Math.random() * 12) + 13}:00`,
-        venue: venue,
-        summary: `Past ${eventType.toLowerCase()} focused on community development and engagement.`,
-        content: `This ${eventType.toLowerCase()} brought together community members to discuss important issues and develop action plans. The event was well-attended and received positive feedback from participants.`,
-        status: "past" as const,
-      }
-    }),
-    // Generate 80 more past events for the previous year
-    ...Array.from({ length: 80 }, (_, i) => {
-      const year = 2023
-      const month = Math.floor(Math.random() * 12)
-      const day = Math.floor(Math.random() * 28) + 1
-      const eventTypes = [
-        "Workshop",
-        "Meeting",
-        "Conference",
-        "Seminar",
-        "Training",
-        "Fundraiser",
-        "Community Event",
-        "Volunteer Day",
-        "Panel Discussion",
-        "Networking Event",
-      ]
-      const venues = [
-        "Community Center",
-        "Town Hall",
-        "Public Library",
-        "Local School",
-        "City Park",
-        "Conference Center",
-        "Hotel Ballroom",
-        "University Campus",
-        "Sports Complex",
-        "Cultural Center",
-      ]
-      const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)]
-      const venue = venues[Math.floor(Math.random() * venues.length)]
-
-      return {
-        id: 89 + i,
-        title: `${eventType} ${year} - ${i + 1}`,
-        date: new Date(year, month, day),
-        startTime: `${Math.floor(Math.random() * 12) + 8}:00`,
-        endTime: `${Math.floor(Math.random() * 12) + 13}:00`,
-        venue: venue,
-        summary: `Past ${eventType.toLowerCase()} from ${year} focused on community development.`,
-        content: `This ${eventType.toLowerCase()} from ${year} brought together community members to discuss important issues and develop action plans. The event was well-attended and received positive feedback from participants.`,
-        status: "past" as const,
-      }
-    }),
-    // Generate 80 upcoming events
-    ...Array.from({ length: 80 }, (_, i) => {
-      const year = 2025
-      const month = Math.floor(Math.random() * 12)
-      const day = Math.floor(Math.random() * 28) + 1
-      const eventTypes = [
-        "Workshop",
-        "Meeting",
-        "Conference",
-        "Seminar",
-        "Training",
-        "Fundraiser",
-        "Community Event",
-        "Volunteer Day",
-        "Panel Discussion",
-        "Networking Event",
-      ]
-      const venues = [
-        "Community Center",
-        "Town Hall",
-        "Public Library",
-        "Local School",
-        "City Park",
-        "Conference Center",
-        "Hotel Ballroom",
-        "University Campus",
-        "Sports Complex",
-        "Cultural Center",
-      ]
-      const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)]
-      const venue = venues[Math.floor(Math.random() * venues.length)]
-
-      return {
-        id: 169 + i,
-        title: `Upcoming ${eventType} - ${i + 1}`,
-        date: new Date(year, month, day),
-        startTime: `${Math.floor(Math.random() * 12) + 8}:00`,
-        endTime: `${Math.floor(Math.random() * 12) + 13}:00`,
-        venue: venue,
-        summary: `Upcoming ${eventType.toLowerCase()} focused on community development and engagement.`,
-        content: `This upcoming ${eventType.toLowerCase()} will bring together community members to discuss important issues and develop action plans. We expect good attendance and look forward to productive discussions.`,
-        status: "upcoming" as const,
-      }
-    }),
-  ])
+    // Calculate total filtered past events count for display purposes
+    const totalFilteredPastEvents = useMemo(() => {
+        return events.filter((event) => {
+            if (event.status !== "past") return false;
+            switch (pastFilter) {
+                case "this-month": return isThisMonth(new Date(event.event_date));
+                case "last-month": return isLastMonth(new Date(event.event_date));
+                default: return true;
+            }
+        }).length;
+    }, [events, pastFilter]); // Removed isThisMonth, isLastMonth from deps
 
   // Effect to filter and paginate upcoming events client-side
   useEffect(() => {
+    // This effect depends on the `events` state, which is now managed by the cache logic
     const filtered = events.filter((event) => {
       if (event.status !== "upcoming") return false
 
       switch (upcomingFilter) {
         case "this-week":
-          return isThisWeek(event.date)
+          return isThisWeek(new Date(event.event_date))
         case "this-month":
-          return isThisMonth(event.date)
+          return isThisMonth(new Date(event.event_date))
         case "next-month":
-          return isNextMonth(event.date)
+          return isNextMonth(new Date(event.event_date))
         default:
           return true // "all"
       }
@@ -383,9 +189,9 @@ export default function RefinedEventsDashboard() {
 
       switch (pastFilter) {
         case "this-month":
-          return isThisMonth(event.date)
+          return isThisMonth(new Date(event.event_date))
         case "last-month":
-          return isLastMonth(event.date)
+          return isLastMonth(new Date(event.event_date))
         default:
           return true // "all"
       }
@@ -421,14 +227,14 @@ export default function RefinedEventsDashboard() {
   }
 
   // Handle edit event
-  const handleEditEvent = (event: Event) => {
+  const handleEditEvent = (event: CachedEvent) => {
     setSelectedEvent(event)
     setIsEditingEvent(true)
     setActiveStep(1)
   }
 
   // Handle view event details
-  const handleViewEventDetails = (event: Event) => {
+  const handleViewEventDetails = (event: CachedEvent) => {
     setSelectedEvent(event)
     setIsDrawerOpen(true)
   }
@@ -441,12 +247,126 @@ export default function RefinedEventsDashboard() {
     }
   }, [isCreatingEvent, isEditingEvent])
 
+  // Fetch events (for refresh after CRUD or if cache is stale on component mount)
+  const fetchEventsAndRefreshState = async (forceRefresh: boolean = false) => {
+    // Consider adding a loading state for this specific refresh if needed
+    const data = await getCachedEvents(forceRefresh);
+    setEvents(data);
+  };
+
+  // Initial fetch or use cache when component mounts, supplementing initialEvents
+  useEffect(() => {
+    // If initialEvents are provided (first SSR load), they are already in `events` state.
+    // This effect can be used to re-validate or fetch if navigating back to the page.
+    // For simplicity, we assume initialEvents are fresh enough for the first render.
+    // Subsequent navigations or actions will trigger cache invalidation and refetch.
+    // Or, you could always fetch here and `getCachedEvents` will decide if API call is needed.
+    const loadEvents = async () => {
+        const cached = await getCachedEvents(); // Will use cache if valid
+        if (cached.length > 0 || initialEvents.length === 0) { // Prioritize fresh/cached data if available or if no SSR data
+            setEvents(cached);
+        }
+    };
+    loadEvents();
+  }, []); // Runs once on mount to ensure client-side cache logic is engaged
+
+  const [formData, setFormData] = useState<CachedEvent>({ // Use CachedEvent
+    id: "",
+    name: "",
+    event_date: "",
+    start_time: "",
+    end_time: "",
+    venue: "",
+    type: "",
+    summary: "",
+    content: "",
+    status: "upcoming",
+  })
+
+  // Populate formData when editing
+  useEffect(() => {
+    if (isEditingEvent && selectedEvent) {
+      setFormData({
+        id: selectedEvent.id,
+        name: selectedEvent.name,
+        event_date: selectedEvent.event_date,
+        start_time: selectedEvent.start_time,
+        end_time: selectedEvent.end_time,
+        venue: selectedEvent.venue,
+        type: selectedEvent.type,
+        summary: selectedEvent.summary,
+        content: selectedEvent.content || "",
+        status: selectedEvent.status,
+      })
+    }
+  }, [isEditingEvent, selectedEvent])
+
+  const resetFormData = () => setFormData({
+    id: "",
+    name: "",
+    event_date: "",
+    start_time: "",
+    end_time: "",
+    venue: "",
+    type: "",
+    summary: "",
+    content: "",
+    status: "upcoming",
+  })
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleCreateEvent = async (formDataPayload: Omit<CachedEvent, 'id'>) => { // Adjust type for payload
+    setIsSubmittingForm(true);
+    try {
+        console.log("Creating event with data:", formDataPayload); 
+        await axios.post('/api/events', formDataPayload);
+        invalidateEventsCache(); // Invalidate cache
+        await fetchEventsAndRefreshState(true); // Force refresh state from (now fresh) cache/API
+        toast.success("Event created successfully!");
+        setIsCreatingEvent(false);
+        resetFormData();
+    } catch (err) {
+        console.error("Create event error:", err);
+      toast.error("Failed to create event.")
+    } finally {
+        setIsSubmittingForm(false); // Stop loading
+    }
+  }
+
+  const handleUpdateEvent = async (formDataPayload: CachedEvent) => { // formDataPayload is a full Event object
+    setIsSubmittingForm(true);
+    try {
+      await axios.put('/api/events', formDataPayload); // Assuming API expects full event object with ID for update
+      invalidateEventsCache(); // Invalidate cache
+      await fetchEventsAndRefreshState(true); // Force refresh state from (now fresh) cache/API
+      toast.success("Event updated successfully!");
+      setIsEditingEvent(false);
+      resetFormData();
+    } catch {
+      toast.error("Failed to update event.")
+    } finally {
+        setIsSubmittingForm(false); // Stop loading
+    }
+  }
+
+
   return (
     <>
       {/* Wrap the content that causes hydration issues in a check */}
       {/* This assumes the sidebar components are not the primary source of hydration issues */}
       {/* If sidebar or main layout causes issues, they might need similar handling or different structures */}
-        <div className="flex ">
+        <div className="flex-1 flex flex-col overflow-hidden ">
+        <header className="border-b bg-white p-4 flex items-center justify-end">
+            <div className="flex items-center gap-2">
+
+              <Button onClick={() => setIsCreatingEvent(true)} className="bg-green-600 hover:bg-green-700">
+                <Plus className="mr-2 h-4 w-4" /> Create Event
+              </Button>
+            </div>
+          </header>
         {/* Assuming sidebar is okay for initial render or handled separately */}
             <main className="flex-1 overflow-auto p-6">
             {isCreatingEvent || isEditingEvent ? (
@@ -461,6 +381,7 @@ export default function RefinedEventsDashboard() {
                         setIsCreatingEvent(false)
                         setIsEditingEvent(false)
                         }}
+                        disabled={isSubmittingForm} // Disable when submitting
                     >
                         <X className="h-4 w-4" />
                     </Button>
@@ -526,7 +447,9 @@ export default function RefinedEventsDashboard() {
                             <Input
                             id="event-name"
                             placeholder="Enter event name"
-                            defaultValue={selectedEvent?.title || ""}
+                            value={formData.name}
+                            onChange={e => handleInputChange("name", e.target.value)}
+                            disabled={isSubmittingForm} // Disable when submitting
                             />
                         </div>
 
@@ -539,21 +462,26 @@ export default function RefinedEventsDashboard() {
                                 id="event-date"
                                 type="date"
                                 className="pl-8"
-                                // Convert Date to ISO string for defaultValue in input[type="date"]
-                                defaultValue={selectedEvent?.date instanceof Date ? selectedEvent.date.toISOString().split("T")[0] : ""}
+                                value={formData.event_date}
+                                onChange={e => handleInputChange("event_date", e.target.value)}
+                                disabled={isSubmittingForm} // Disable when submitting
                                 />
                             </div>
                             </div>
 
                             <div>
                             <Label htmlFor="event-type">Event Type</Label>
-                            <Select defaultValue={selectedEvent?.status || "upcoming"}>
+                            <Select
+                                value={formData.type}
+                                onValueChange={value => handleInputChange("type", value)}
+                                disabled={isSubmittingForm} // Disable when submitting
+                            >
                                 <SelectTrigger>
                                 <SelectValue placeholder="Select event type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                <SelectItem value="upcoming">Upcoming</SelectItem>
-                                <SelectItem value="draft">Draft</SelectItem>
+                                <SelectItem value="physical">In Person</SelectItem>
+                                <SelectItem value="online">Online</SelectItem>
                                 </SelectContent>
                             </Select>
                             </div>
@@ -572,7 +500,9 @@ export default function RefinedEventsDashboard() {
                                 id="venue"
                                 placeholder="Enter venue"
                                 className="pl-8"
-                                defaultValue={selectedEvent?.venue || ""}
+                                value={formData.venue}
+                                onChange={e => handleInputChange("venue", e.target.value)}
+                                disabled={isSubmittingForm} // Disable when submitting
                             />
                             </div>
                         </div>
@@ -586,7 +516,9 @@ export default function RefinedEventsDashboard() {
                                 id="start-time"
                                 type="time"
                                 className="pl-8"
-                                defaultValue={selectedEvent?.startTime || ""}
+                                value={formData.start_time}
+                                onChange={e => handleInputChange("start_time", e.target.value)}
+                                disabled={isSubmittingForm} // Disable when submitting
                                 />
                             </div>
                             </div>
@@ -599,7 +531,9 @@ export default function RefinedEventsDashboard() {
                                 id="end-time"
                                 type="time"
                                 className="pl-8"
-                                defaultValue={selectedEvent?.endTime || ""}
+                                value={formData.end_time}
+                                onChange={e => handleInputChange("end_time", e.target.value)}
+                                disabled={isSubmittingForm} // Disable when submitting
                                 />
                             </div>
                             </div>
@@ -616,7 +550,9 @@ export default function RefinedEventsDashboard() {
                             id="summary"
                             placeholder="Brief description of the event"
                             rows={2}
-                            defaultValue={selectedEvent?.summary || ""}
+                            value={formData.summary}
+                            onChange={e => handleInputChange("summary", e.target.value)}
+                            disabled={isSubmittingForm} // Disable when submitting
                             />
                         </div>
 
@@ -626,7 +562,9 @@ export default function RefinedEventsDashboard() {
                             id="content"
                             placeholder="Detailed information about the event"
                             rows={6}
-                            defaultValue={selectedEvent?.content || ""}
+                            value={formData.content}
+                            onChange={e => handleInputChange("content", e.target.value)}
+                            disabled={isSubmittingForm} // Disable when submitting
                             />
                         </div>
                         </div>
@@ -644,6 +582,7 @@ export default function RefinedEventsDashboard() {
                             }
                             : prevStep
                         }
+                        disabled={isSubmittingForm} // Disable when submitting
                     >
                         {activeStep === 1 ? (
                         "Cancel"
@@ -655,27 +594,28 @@ export default function RefinedEventsDashboard() {
                     </Button>
 
                     <Button
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-green-600 hover:bg-green-700 min-w-[120px]" // Added min-width for consistency
                         onClick={
-                        activeStep === totalSteps
-                            ? () => {
-                                setIsCreatingEvent(false)
-                                setIsEditingEvent(false)
-                                setActiveStep(1)
-                            }
-                            : nextStep
-                        }
+                            activeStep === totalSteps
+                              ? () => {
+                                  if (isEditingEvent) {
+                                    handleUpdateEvent(formData)
+                                  } else {
+                                    handleCreateEvent(formData)
+                                  }
+                                }
+                              : nextStep
+                          }
+                        disabled={isSubmittingForm} // Disable when submitting
                     >
-                        {activeStep === totalSteps ? (
-                        isEditingEvent ? (
-                            "Update Event"
+                        {isSubmittingForm ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : activeStep === totalSteps ? (
+                            isEditingEvent ? "Update Event" : "Create Event"
                         ) : (
-                            "Create Event"
-                        )
-                        ) : (
-                        <>
-                            Next <ChevronRight className="ml-2 h-4 w-4" />
-                        </>
+                            <>
+                                Next <ChevronRight className="ml-2 h-4 w-4" />
+                            </>
                         )}
                     </Button>
                     </div>
@@ -724,16 +664,23 @@ export default function RefinedEventsDashboard() {
                                 >
                                 <Edit className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <Trash2 className="h-4 w-4" />
+                                <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                    setEventToDelete(event);
+                                    setDeleteDialogOpen(true);
+                                }}
+                                >
+                                <Trash2 className="h-4 w-4 text-red-600" />
                                 </Button>
                             </div>
                             </div>
-                            <CardTitle className="mt-2">{event.title}</CardTitle>
+                            <CardTitle className="mt-2">{event.name}</CardTitle>
                             <CardDescription className="flex items-center mt-1">
                             <CalendarDays className="mr-1 h-4 w-4" />
                             {/* Use formatDate, which now handles potential server-side differences */}
-                            {formatDate(event.date)}
+                            {formatDate(new Date(event.event_date))}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -741,7 +688,7 @@ export default function RefinedEventsDashboard() {
                             <div className="flex items-center">
                                 <Clock className="mr-2 h-4 w-4 shrink-0" />
                                 <span>
-                                {event.startTime} - {event.endTime}
+                                {event.start_time} - {event.end_time}
                                 </span>
                             </div>
                             <div className="flex items-center">
@@ -766,112 +713,36 @@ export default function RefinedEventsDashboard() {
                         </Card>
                     ))
                     ) : (
-                    <div className="col-span-2 py-12 text-center text-muted-foreground">
-                        No upcoming events found for the selected filter.
+                    <div className="col-span-2 py-12 flex flex-col items-center justify-center">
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50 w-full max-w-md text-center">
+                            <h3 className="text-lg font-semibold text-gray-500 mb-2">No Upcoming Events</h3>
+                            <p className="text-gray-400">There are currently no upcoming events. Click "Create Event" to add one.</p>
+                        </div>
                     </div>
                     )}
                 </div>
 
-                {/* Upcoming Events Pagination - Use upcomingTotalPages state */}
-                <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Rows per page:</span>
-                    <Select
-                        value={upcomingRowsPerPage.toString()}
-                        onValueChange={(value) => {
-                        setUpcomingRowsPerPage(Number.parseInt(value))
-                        setUpcomingCurrentPage(1)
-                        }}
-                    >
-                        <SelectTrigger className="w-[70px] h-8">
-                        <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                        <SelectItem value="6">6</SelectItem>
-                        <SelectItem value="12">12</SelectItem>
-                        <SelectItem value="24">24</SelectItem>
-                        <SelectItem value="48">48</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <span className="text-sm text-muted-foreground">
-                        {/* Displaying range based on upcomingEventsToShow and total filtered count */}
-                        {upcomingEventsToShow.length > 0
-                        ? `${(upcomingCurrentPage - 1) * upcomingRowsPerPage + 1}-${Math.min(
-                            upcomingCurrentPage * upcomingRowsPerPage,
-                            // Need the total count of filtered events *before* pagination for this
-                            // A small adjustment needed here or calculate total filtered count in effect
-                                events.filter((event) => {
-                                if (event.status !== "upcoming") return false;
-                                switch (upcomingFilter) {
-                                    case "this-week": return isThisWeek(event.date);
-                                    case "this-month": return isThisMonth(event.date);
-                                    case "next-month": return isNextMonth(event.date);
-                                    default: return true;
-                                }
-                                }).length
-                            )} of ${
-                                events.filter((event) => {
-                                if (event.status !== "upcoming") return false;
-                                switch (upcomingFilter) {
-                                    case "this-week": return isThisWeek(event.date);
-                                    case "this-month": return isThisMonth(event.date);
-                                    case "next-month": return isNextMonth(event.date);
-                                    default: return true;
-                                }
-                                }).length
-                            }`
-                        : "0-0 of 0"}
-                    </span>
+                {/* Upcoming Events Pagination - Use reusable Pagination component */}
+                {upcomingEventsToShow.length > 0 && (
+                    <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 border-green-200">
+                        <div className="flex items-center gap-2 text-sm text-green-700">
+                            <span>
+                                Displaying {((upcomingCurrentPage - 1) * upcomingRowsPerPage) + 1}-
+                                {Math.min(upcomingCurrentPage * upcomingRowsPerPage, totalFilteredUpcomingEvents)} of {totalFilteredUpcomingEvents}
+                            </span>
+                        </div>
+                        <Pagination
+                            currentPage={upcomingCurrentPage}
+                            totalPages={upcomingTotalPages}
+                            pageSize={upcomingRowsPerPage}
+                            onPageChange={setUpcomingCurrentPage}
+                            onPageSizeChange={(size) => {
+                                setUpcomingRowsPerPage(size);
+                                setUpcomingCurrentPage(1);
+                            }}
+                        />
                     </div>
-
-                    <div className="flex items-center">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0"
-                        onClick={() => setUpcomingCurrentPage(1)}
-                        disabled={upcomingCurrentPage === 1 || upcomingEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to first page</span>
-                        <ChevronLeft className="h-4 w-4" />
-                        <ChevronLeft className="h-4 w-4 -ml-2" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0 ml-2"
-                        onClick={() => setUpcomingCurrentPage((p) => Math.max(1, p - 1))}
-                        disabled={upcomingCurrentPage === 1 || upcomingEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to previous page</span>
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="mx-2 text-sm font-medium">
-                        {upcomingTotalPages > 0 ? `${upcomingCurrentPage} of ${upcomingTotalPages}` : '0 of 0'}
-                    </span>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0 mr-2"
-                        onClick={() => setUpcomingCurrentPage((p) => Math.min(upcomingTotalPages, p + 1))}
-                        disabled={upcomingCurrentPage === upcomingTotalPages || upcomingEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to next page</span>
-                        <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0"
-                        onClick={() => setUpcomingCurrentPage(upcomingTotalPages)}
-                        disabled={upcomingCurrentPage === upcomingTotalPages || upcomingEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to last page</span>
-                        <ChevronRight className="h-4 w-4" />
-                        <ChevronRight className="h-4 w-4 -ml-2" />
-                    </Button>
-                    </div>
-                </div>
+                )}
 
                 <Separator className="my-8" />
 
@@ -902,22 +773,22 @@ export default function RefinedEventsDashboard() {
                   <CardContent className="p-0">
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-enugu/20">
                           <tr>
                             {/* Hide less important columns on mobile */}
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-enugu uppercase">
                               Event
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-enugu uppercase hidden md:table-cell">
                               Date
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-enugu uppercase hidden lg:table-cell">
                               Time
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-enugu uppercase hidden lg:table-cell">
                               Venue
                             </th>
-                            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-right text-xs font-medium text-enugu uppercase">
                               <span className="sr-only">Actions</span>
                             </th>
                           </tr>
@@ -927,10 +798,10 @@ export default function RefinedEventsDashboard() {
                             pastEventsToShow.map((event) => (
                               <tr key={event.id} className="hover:bg-gray-50">
                                 <td className="px-4 py-3">
-                                  <div className="text-sm font-medium text-gray-900">{event.title}</div>
+                                  <div className="text-sm font-medium text-gray-900">{event.name}</div>
                                   {/* Show date on mobile only */}
                                   <div className="text-xs text-gray-500 md:hidden">
-                                    {formatDate(event.date)}
+                                    {formatDate(new Date(event.event_date))}
                                   </div>
                                   <div className="text-xs text-gray-500 line-clamp-1 max-w-[200px]">
                                     {event.summary}
@@ -938,11 +809,11 @@ export default function RefinedEventsDashboard() {
                                 </td>
                                 {/* Hide these columns on mobile */}
                                 <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                                  <div className="text-sm text-gray-900">{formatDate(event.date)}</div>
+                                  <div className="text-sm text-gray-900">{formatDate(new Date(event.event_date))}</div>
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
                                   <div className="text-sm text-gray-900">
-                                    {event.startTime} - {event.endTime}
+                                    {event.start_time} - {event.end_time}
                                   </div>
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
@@ -962,8 +833,13 @@ export default function RefinedEventsDashboard() {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                                No past events found for the selected filter.
+                              <td colSpan={5}>
+                                <div className="py-12 flex flex-col items-center justify-center">
+                                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50 w-full max-w-md text-center">
+                                    <h3 className="text-lg font-semibold text-gray-500 mb-2">No Past Events</h3>
+                                    <p className="text-gray-400">There are currently no past events.</p>
+                                  </div>
+                                </div>
                               </td>
                             </tr>
                           )}
@@ -973,103 +849,27 @@ export default function RefinedEventsDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Past Events Pagination - Use pastTotalPages state */}
-                <div className="mt-6 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Rows per page:</span>
-                    <Select
-                        value={rowsPerPage.toString()}
-                        onValueChange={(value) => {
-                        setRowsPerPage(Number.parseInt(value))
-                        setCurrentPage(1)
-                        }}
-                    >
-                        <SelectTrigger className="w-[70px] h-8">
-                        <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                        <SelectItem value="5">5</SelectItem>
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="20">20</SelectItem>
-                        </SelectContent>
-                    </Select>
-                        <span className="text-sm text-muted-foreground">
-                        {/* Displaying range based on pastEventsToShow and total filtered count */}
-                        {pastEventsToShow.length > 0
-                        ? `${(currentPage - 1) * rowsPerPage + 1}-${Math.min(
-                            currentPage * rowsPerPage,
-                            // Need the total count of filtered events *before* pagination for this
-                            // A small adjustment needed here or calculate total filtered count in effect
-                                events.filter((event) => {
-                                if (event.status !== "past") return false;
-                                switch (pastFilter) {
-                                    case "this-month": return isThisMonth(event.date);
-                                    case "last-month": return isLastMonth(event.date);
-                                    default: return true;
-                                }
-                                }).length
-                            )} of ${
-                                events.filter((event) => {
-                                if (event.status !== "past") return false;
-                                switch (pastFilter) {
-                                    case "this-month": return isThisMonth(event.date);
-                                    case "last-month": return isLastMonth(event.date);
-                                    default: return true;
-                                }
-                                }).length
-                            }`
-                        : "0-0 of 0"}
-                    </span>
+                {/* Past Events Pagination - Use reusable Pagination component */}
+                {pastEventsToShow.length > 0 && (
+                     <div className="mt-6 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 border-green-200">
+                        <div className="flex items-center gap-2 text-sm text-green-700">
+                            <span>
+                                Displaying {((currentPage - 1) * rowsPerPage) + 1}-
+                                {Math.min(currentPage * rowsPerPage, totalFilteredPastEvents)} of {totalFilteredPastEvents}
+                            </span>
+                        </div>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={pastTotalPages}
+                            pageSize={rowsPerPage}
+                            onPageChange={setCurrentPage}
+                            onPageSizeChange={(size) => {
+                                setRowsPerPage(size);
+                                setCurrentPage(1);
+                            }}
+                        />
                     </div>
-
-                    <div className="flex items-center">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0"
-                        onClick={() => setCurrentPage(1)}
-                        disabled={currentPage === 1 || pastEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to first page</span>
-                        <ChevronLeft className="h-4 w-4" />
-                        <ChevronLeft className="h-4 w-4 -ml-2" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0 ml-2"
-                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                        disabled={currentPage === 1 || pastEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to previous page</span>
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="mx-2 text-sm font-medium">
-                        {pastTotalPages > 0 ? `${currentPage} of ${pastTotalPages}` : '0 of 0'}
-                    </span>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0 mr-2"
-                        onClick={() => setCurrentPage((p) => Math.min(pastTotalPages, p + 1))}
-                        disabled={currentPage === pastTotalPages || pastEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to next page</span>
-                        <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 p-0"
-                        onClick={() => setCurrentPage(pastTotalPages)}
-                        disabled={currentPage === pastTotalPages || pastEventsToShow.length === 0}
-                    >
-                        <span className="sr-only">Go to last page</span>
-                        <ChevronRight className="h-4 w-4" />
-                        <ChevronRight className="h-4 w-4 -ml-2" />
-                    </Button>
-                    </div>
-                </div>
+                )}
                 </>
             )}
             </main>
@@ -1079,18 +879,32 @@ export default function RefinedEventsDashboard() {
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <DrawerContent>
             <DrawerHeader className="pb-0">
-              <DrawerTitle>{selectedEvent?.title}</DrawerTitle>
-              <DrawerDescription className="flex items-center">
-                <CalendarDays className="mr-1 h-4 w-4" />
-                {selectedEvent ? formatDate(selectedEvent.date) : ""}
-              </DrawerDescription>
-              <div className="flex items-center text-muted-foreground text-sm">
-                <Clock className="mr-1 h-4 w-4" />
-                {selectedEvent ? `${selectedEvent.startTime} - ${selectedEvent.endTime}` : ""}
+              <div className="flex justify-between items-start">
+                <div>
+                  <DrawerTitle>{selectedEvent?.name}</DrawerTitle>
+                  <DrawerDescription className="flex items-center mt-1">
+                    <CalendarDays className="mr-1 h-4 w-4" />
+                    {selectedEvent ? formatDate(new Date(selectedEvent.event_date)) : ""}
+                  </DrawerDescription>
+                </div>
+                {selectedEvent && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-600 hover:bg-red-100"
+                    onClick={() => {
+                      setEventToDelete(selectedEvent);
+                      setDeleteDialogOpen(true);
+                    }}
+                    title="Delete Event"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </Button>
+                )}
               </div>
-              <div className="flex items-center text-muted-foreground text-sm">
-                <MapPin className="mr-1 h-4 w-4" />
-                {selectedEvent?.venue}
+              <div className="flex items-center text-muted-foreground text-sm mt-2">
+                <Clock className="mr-1 h-4 w-4" />
+                {selectedEvent ? `${selectedEvent.start_time} - ${selectedEvent.end_time}` : ""}
               </div>
             </DrawerHeader>
             <div className="p-4 overflow-y-auto">
@@ -1106,6 +920,46 @@ export default function RefinedEventsDashboard() {
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
+
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Event?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete <b>{eventToDelete?.name}</b>?<br />
+                <span className="text-red-600 font-semibold">This action cannot be undone.</span>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700"
+                onClick={async () => {
+                  if (!eventToDelete) return;
+                  setIsDeleting(true);
+                  try {
+                    await axios.delete(`/api/events?id=${eventToDelete.id}`);
+                    toast.success("Event deleted successfully!");
+                    invalidateEventsCache(); // Invalidate cache
+                    await fetchEventsAndRefreshState(true); // Force refresh state
+                    if (isDrawerOpen && selectedEvent?.id === eventToDelete.id) {
+                        setIsDrawerOpen(false);
+                    }
+                  } catch (err) {
+                    toast.error("Failed to delete event.");
+                  } finally {
+                    setIsDeleting(false);
+                    setDeleteDialogOpen(false);
+                    setEventToDelete(null);
+                  }
+                }}
+              >
+                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
     </>
   )
 }
