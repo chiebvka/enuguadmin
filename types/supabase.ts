@@ -38,14 +38,17 @@ export type Database = {
         Row: {
           blogpost_id: string
           tag_id: string
+          user_id: string | null
         }
         Insert: {
           blogpost_id: string
           tag_id: string
+          user_id?: string | null
         }
         Update: {
           blogpost_id?: string
           tag_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -62,6 +65,13 @@ export type Database = {
             referencedRelation: "tags"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "blogpost_tags_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       blogposts: {
@@ -72,6 +82,7 @@ export type Database = {
           created_at: string | null
           id: string
           slug: string
+          status: string | null
           title: string
           updated_at: string | null
         }
@@ -82,6 +93,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           slug: string
+          status?: string | null
           title: string
           updated_at?: string | null
         }
@@ -92,6 +104,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           slug?: string
+          status?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -105,10 +118,25 @@ export type Database = {
           },
         ]
       }
-      events: {
+      event_participant: {
         Row: {
           created_at: string
-          description: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          content: string | null
+          created_at: string
           end_time: string | null
           event_date: string | null
           event_time: string | null
@@ -116,12 +144,14 @@ export type Database = {
           name: string | null
           profile_id: string | null
           start_time: string | null
+          status: string | null
           summary: string | null
+          type: string | null
           venue: string | null
         }
         Insert: {
+          content?: string | null
           created_at?: string
-          description?: string | null
           end_time?: string | null
           event_date?: string | null
           event_time?: string | null
@@ -129,12 +159,14 @@ export type Database = {
           name?: string | null
           profile_id?: string | null
           start_time?: string | null
+          status?: string | null
           summary?: string | null
+          type?: string | null
           venue?: string | null
         }
         Update: {
+          content?: string | null
           created_at?: string
-          description?: string | null
           end_time?: string | null
           event_date?: string | null
           event_time?: string | null
@@ -142,7 +174,9 @@ export type Database = {
           name?: string | null
           profile_id?: string | null
           start_time?: string | null
+          status?: string | null
           summary?: string | null
+          type?: string | null
           venue?: string | null
         }
         Relationships: [
@@ -154,6 +188,110 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      galleryimages: {
+        Row: {
+          alt_text: string | null
+          created_at: string | null
+          gallery_id: string
+          id: string
+          image_url: string
+          position: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string | null
+          gallery_id: string
+          id?: string
+          image_url: string
+          position?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string | null
+          gallery_id?: string
+          id?: string
+          image_url?: string
+          position?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "galleryimages_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "galleryposts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallerypost_tags: {
+        Row: {
+          gallery_id: string
+          tag_id: string
+          user_id: string | null
+        }
+        Insert: {
+          gallery_id: string
+          tag_id: string
+          user_id?: string | null
+        }
+        Update: {
+          gallery_id?: string
+          tag_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallerypost_tags_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "galleryposts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallerypost_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      galleryposts: {
+        Row: {
+          author_id: string | null
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          slug: string
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          created_at?: string | null
+          date: string
+          description?: string | null
+          id?: string
+          slug: string
+          title: string
+          type?: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          slug?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       membership: {
         Row: {
@@ -254,20 +392,31 @@ export type Database = {
       tags: {
         Row: {
           id: string
+          name: string
+          profile_id: string | null
           slug: string
-          title: string
         }
         Insert: {
           id?: string
+          name: string
+          profile_id?: string | null
           slug: string
-          title: string
         }
         Update: {
           id?: string
+          name?: string
+          profile_id?: string | null
           slug?: string
-          title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tags_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

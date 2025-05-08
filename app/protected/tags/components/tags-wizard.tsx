@@ -273,7 +273,11 @@ export default function Tagswizard({ initialTags }: Props) {
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
                     {/* The action button calls the confirmation logic */}
-                    <AlertDialogAction onClick={confirmDeleteTag} disabled={isLoading}>
+                    <AlertDialogAction
+                      onClick={confirmDeleteTag}
+                      disabled={isLoading}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Continue
                     </AlertDialogAction>

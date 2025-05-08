@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreHorizontal, Edit, Trash, Eye, Copy } from "lucide-react"
+import { MoreHorizontal, Edit, Eye, Copy } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,10 +31,6 @@ export function BlogActionsMenu({ blogId }: BlogActionsMenuProps) {
     console.log(`Duplicate blog ${blogId}`)
   }
 
-  const handleDelete = () => {
-    // Handle delete logic
-    console.log(`Delete blog ${blogId}`)
-  }
 
   return (
     <DropdownMenu>

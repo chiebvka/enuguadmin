@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 // import { toast } from "sonner";
 
 // Define the type for a Tag object (should match the type passed from the page)
-interface Tag {
+export interface Tag {
     id: string;
     name: string;
     slug?: string;
@@ -98,7 +98,12 @@ export function TagSelector({ selectedTags, onChange, availableTags, disabled }:
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           {/* Disable the trigger button based on the disabled prop */}
-          <Button variant="outline" size="sm" className="h-8 border-dashed" disabled={disabled}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 border-dashed border-green-300 text-green-700 bg-green-50 hover:bg-green-100 hover:text-green-800"
+            disabled={disabled}
+          >
              {/* No loader for fetching here, parent manages loading */}
              Add tags
           </Button>
