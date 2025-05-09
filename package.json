@@ -40,6 +40,8 @@
     "formdata-node": "^6.0.3",
     "formdata-polyfill": "^4.0.10",
     "formidable": "^3.5.4",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.468.0",
     "next": "latest",
     "next-themes": "^0.4.6",

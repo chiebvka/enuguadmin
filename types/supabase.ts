@@ -197,6 +197,7 @@ export type Database = {
           id: string
           image_url: string
           position: number | null
+          r2_key: string | null
         }
         Insert: {
           alt_text?: string | null
@@ -205,6 +206,7 @@ export type Database = {
           id?: string
           image_url: string
           position?: number | null
+          r2_key?: string | null
         }
         Update: {
           alt_text?: string | null
@@ -213,6 +215,7 @@ export type Database = {
           id?: string
           image_url?: string
           position?: number | null
+          r2_key?: string | null
         }
         Relationships: [
           {
@@ -300,6 +303,7 @@ export type Database = {
           approved_on: string | null
           bio: string | null
           created_at: string
+          denial_reason: string | null
           denied_by: string | null
           denied_on: string | null
           dob: string | null
@@ -321,6 +325,7 @@ export type Database = {
           approved_on?: string | null
           bio?: string | null
           created_at?: string
+          denial_reason?: string | null
           denied_by?: string | null
           denied_on?: string | null
           dob?: string | null
@@ -342,6 +347,7 @@ export type Database = {
           approved_on?: string | null
           bio?: string | null
           created_at?: string
+          denial_reason?: string | null
           denied_by?: string | null
           denied_on?: string | null
           dob?: string | null

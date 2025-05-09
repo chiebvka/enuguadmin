@@ -101,7 +101,9 @@ async function fetchAvailableTags(): Promise<Tag[]> {
 }
 
 // The Page Component
-export default async function EditGalleryPage({ params }: Props) {
+export default async function EditGalleryPage(
+    { params }: { params: { id: string } }
+) {
    
     const galleryId =  params?.id;
 
