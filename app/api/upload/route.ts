@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
     const contentType = file.type || "application/octet-stream";
     const filename = `${folder}/${Date.now()}-${file.name || "upload"}`;
 
-    const url = await uploadFileToR2(buffer, filename, contentType);
+    const { url, key } = await uploadFileToR2(buffer, filename, contentType);
 
-    return NextResponse.json({ url });
+    return NextResponse.json({ url, key });
   } catch (error) {
     console.error("Upload failed:", error);
     return NextResponse.json({ error: "File upload failed" }, { status: 500 });

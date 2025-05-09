@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export const r2 = new S3Client({
   region: "auto",
@@ -26,10 +26,27 @@ export async function uploadFileToR2(
 
   // Return a public-accessible URL — customize this if you're using a CDN domain
   const baseUrl = process.env.R2_PUBLIC_URL || `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}`;
-  return `${baseUrl}/${key}`;
+  return {
+    url: `${baseUrl}/${key}`,
+    key: key // Return the key as well
+  };
 }
 
+export async function deleteFileFromR2(key: string) {
+  const command = new DeleteObjectCommand({
+    Bucket: process.env.R2_BUCKET!,
+    Key: key,
+  });
 
+  try {
+    await r2.send(command);
+    console.log(`Successfully deleted ${key} from R2.`);
+    return { success: true };
+  } catch (error) {
+    console.error(`Failed to delete ${key} from R2:`, error);
+    throw error; // Re-throw to be handled by the API route
+  }
+}
 
 // // lib/r2.ts
 // import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";

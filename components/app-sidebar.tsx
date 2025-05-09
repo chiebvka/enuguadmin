@@ -5,6 +5,7 @@ import {
   BookOpen,
   Frame,
   GalleryVerticalEnd,
+  Home,
   Image,
   Logs,
   Map,
@@ -36,6 +37,18 @@ const data = {
   ],
   navMain: [
     {
+      title: "Home",
+      url: "/protected",
+      icon: Home,
+      isActive: true,
+      items: [
+        {
+          title: "Home",
+          url: "/protected",
+        },
+      ],
+    },
+    {
       title: "Membership",
       url: "/protected/members",
       icon: Logs,
@@ -65,8 +78,8 @@ const data = {
           url: "/protected/blogs",
         },
         {
-          title: "Blog Tags",
-          url: "/protected/tags",
+          title: "Add Blog",
+          url: "/protected/blogs/create",
         }
       ],
     },
@@ -103,16 +116,12 @@ const data = {
       icon: Image,
       items: [
         {
-          title: "Add Media",
+          title: "Media Gallery",
+          url: "/protected/gallery",
+        },
+        {
+          title: "Add Gallery",
           url: "/protected/gallery/add",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
         },
       ],
     },

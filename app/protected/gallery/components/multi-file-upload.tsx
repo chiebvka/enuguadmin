@@ -111,8 +111,8 @@ export function MultiFileUploader({
       <div className="space-y-4">
         <div
           className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-            isDragging ? "border-green-600 bg-green-50" : "border-gray-300"
-          } ${disabled ? 'bg-gray-100 opacity-50 cursor-not-allowed' : 'hover:border-gray-400'}`}
+            isDragging ? "border-green-600 bg-green-50 dark:bg-green-900/50 dark:border-green-500" : "border-gray-300 dark:border-gray-600"
+          } ${disabled ? 'bg-gray-100 opacity-50 cursor-not-allowed dark:bg-gray-800' : 'hover:border-gray-400 dark:hover:border-gray-500'}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -126,37 +126,43 @@ export function MultiFileUploader({
             className="hidden"
             disabled={disabled}
           />
-          <Upload className={`h-10 w-10 mx-auto mb-2 ${disabled ? 'text-gray-400' : 'text-green-600'}`} />
-          <p className="text-sm font-medium mb-1">
+          <Upload className={`h-10 w-10 mx-auto mb-2 ${disabled ? 'text-gray-400 dark:text-gray-500' : 'text-green-600 dark:text-green-500'}`} />
+          <p className="text-sm font-medium mb-1 dark:text-gray-300">
             Drag and drop files here or{" "}
             <Button
               type="button"
               variant="link"
-              className={`p-0 h-auto ${disabled ? 'text-gray-500' : 'text-green-600'}`}
+              className={`p-0 h-auto ${disabled ? 'text-gray-500 dark:text-gray-400' : 'text-green-600 dark:text-green-500'}`}
               onClick={() => !disabled && fileInputRef.current?.click()}
               disabled={disabled}
             >
               browse
             </Button>
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground dark:text-gray-400">
             Upload up to {maxFiles} files ({value.length}/{maxFiles})
           </p>
         </div>
   
         {value.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium">
+            <p className="text-sm font-medium dark:text-gray-200">
               Selected files ({value.length}/{maxFiles})
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {value.map((file, index) => (
-                <div key={index} className={`flex items-center justify-between p-2 border rounded-md ${disabled ? 'bg-gray-100' : 'bg-gray-50'}`}>
+                <div 
+                  key={index} 
+                  className={`flex items-center justify-between p-2 border rounded-md 
+                              ${disabled 
+                                ? 'bg-gray-100 dark:bg-gray-800 dark:border-gray-700' 
+                                : 'bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700/70'}`}
+                >
                   <div className="flex items-center space-x-2 overflow-hidden">
-                    <div className="flex-shrink-0 w-8 h-8 rounded bg-gray-200 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-8 h-8 rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                       {getFileIcon(file)}
                     </div>
-                    <span className="text-sm truncate" title={file.name}>
+                    <span className="text-sm truncate dark:text-gray-300" title={file.name}>
                       {file.name}
                     </span>
                   </div>
@@ -164,7 +170,7 @@ export function MultiFileUploader({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-gray-500 hover:text-red-600"
+                    className="h-8 w-8 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500"
                     onClick={() => removeFile(index)}
                     disabled={disabled}
                   >

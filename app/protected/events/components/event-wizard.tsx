@@ -724,8 +724,8 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
 
                 {/* Upcoming Events Pagination - Use reusable Pagination component */}
                 {upcomingEventsToShow.length > 0 && (
-                    <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 border-green-200">
-                        <div className="flex items-center gap-2 text-sm text-green-700">
+                    <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/50">
+                        <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
                             <span>
                                 Displaying {((upcomingCurrentPage - 1) * upcomingRowsPerPage) + 1}-
                                 {Math.min(upcomingCurrentPage * upcomingRowsPerPage, totalFilteredUpcomingEvents)} of {totalFilteredUpcomingEvents}
@@ -796,27 +796,27 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
                         <tbody className="divide-y divide-gray-200">
                           {pastEventsToShow.length > 0 ? (
                             pastEventsToShow.map((event) => (
-                              <tr key={event.id} className="hover:bg-gray-50">
+                              <tr key={event.id} className="hover:bg-enugu/20">
                                 <td className="px-4 py-3">
-                                  <div className="text-sm font-medium text-gray-900">{event.name}</div>
+                                  <div className="text-sm font-medium ">{event.name}</div>
                                   {/* Show date on mobile only */}
-                                  <div className="text-xs text-gray-500 md:hidden">
+                                  <div className="text-xs text-muted-foreground md:hidden">
                                     {formatDate(new Date(event.event_date))}
                                   </div>
-                                  <div className="text-xs text-gray-500 line-clamp-1 max-w-[200px]">
+                                  <div className="text-xs text-muted-foreground line-clamp-1 max-w-[200px]">
                                     {event.summary}
                                   </div>
                                 </td>
                                 {/* Hide these columns on mobile */}
                                 <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
-                                  <div className="text-sm text-gray-900">{formatDate(new Date(event.event_date))}</div>
+                                  <div className="text-sm text-muted-foreground">{formatDate(new Date(event.event_date))}</div>
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
-                                  <div className="text-sm text-gray-900">
+                                  <div className="text-sm text-muted-foreground">
                                     {event.start_time} - {event.end_time}
                                   </div>
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                                <td className="px-4 py-3 whitespace-nowrap text-sm text-muted-foreground hidden lg:table-cell">
                                   {event.venue}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-right">
@@ -851,8 +851,8 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
 
                 {/* Past Events Pagination - Use reusable Pagination component */}
                 {pastEventsToShow.length > 0 && (
-                     <div className="mt-6 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 border-green-200">
-                        <div className="flex items-center gap-2 text-sm text-green-700">
+                     <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/50">
+                        <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
                             <span>
                                 Displaying {((currentPage - 1) * rowsPerPage) + 1}-
                                 {Math.min(currentPage * rowsPerPage, totalFilteredPastEvents)} of {totalFilteredPastEvents}

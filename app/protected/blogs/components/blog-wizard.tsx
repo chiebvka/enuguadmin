@@ -44,7 +44,7 @@ export default function Blogwizard() {
     const [allBlogs, setAllBlogs] = useState<CachedBlogPost[]>([]);
     const [isLoadingBlogs, setIsLoadingBlogs] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(5);
     const [searchQuery, setSearchQuery] = useState("");
     const [expandedBlogIds, setExpandedBlogIds] = useState<Record<string, boolean>>({});
     
@@ -283,8 +283,8 @@ export default function Blogwizard() {
 
             {/* Styled Pagination Container - To match Events page */}
             {paginatedBlogs.length > 0 && (
-              <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 border-green-200">
-                <div className="flex items-center gap-2 text-sm text-green-700">
+              <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/50">
+                <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
                   <span>
                       Displaying {((currentPage - 1) * pageSize) + 1}-
                       {Math.min(currentPage * pageSize, totalFilteredBlogs)} of {totalFilteredBlogs}
