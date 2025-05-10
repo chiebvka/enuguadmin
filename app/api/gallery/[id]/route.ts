@@ -5,17 +5,12 @@ import slugify from "slugify";
 import { deleteFileFromR2 } from "@/lib/r2";
 
 // Define the expected shape of the route parameters
-type RouteParams = {
+type GalleryIdParams = {
   id: string;
 };
 
-// Define the context type for the route handler
-interface Context {
-  params: RouteParams;
-}
-
 // --- GET a single gallery post for editing ---
-export async function GET(req: NextRequest, context: Context) {
+export async function GET(req: NextRequest, { params }: { params: GalleryIdParams }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -26,7 +21,7 @@ export async function GET(req: NextRequest, context: Context) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const galleryId = context.params.id;
+  const galleryId = params.id;
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
   }
@@ -80,7 +75,7 @@ interface UpdateGalleryRequestBody {
   tags?: string[];
 }
 
-export async function PUT(req: NextRequest, context: Context) {
+export async function PUT(req: NextRequest, { params }: { params: GalleryIdParams }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -91,7 +86,7 @@ export async function PUT(req: NextRequest, context: Context) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const galleryId = context.params.id;
+  const galleryId = params.id;
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
   }
@@ -180,7 +175,7 @@ export async function PUT(req: NextRequest, context: Context) {
 }
 
 // --- DELETE a gallery post ---
-export async function DELETE(req: NextRequest, context: Context) {
+export async function DELETE(req: NextRequest, { params }: { params: GalleryIdParams }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -191,7 +186,7 @@ export async function DELETE(req: NextRequest, context: Context) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const galleryId = context.params.id;
+  const galleryId = params.id;
 
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
@@ -232,8 +227,6 @@ export async function DELETE(req: NextRequest, context: Context) {
     return NextResponse.json({ error: "Failed to delete gallery." }, { status: 500 });
   }
 }
-
-
 
 
 
