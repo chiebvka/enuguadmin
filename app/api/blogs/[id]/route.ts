@@ -6,11 +6,8 @@ type BlogIdParams = {
   id: string;
 };
 
-// Use Next.js's built-in type for the route handler
-export async function GET(
-  req: NextRequest,
-  { params }: { params: BlogIdParams } // Use destructuring with the correct type
-) {
+// Use a simpler typing approach for the second argument
+export async function GET(req: NextRequest, context: { params: { id: string } }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,7 +18,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const blogId = params.id;
+  const blogId = context.params.id;
 
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is missing from URL parameters" }, { status: 400 });
@@ -68,10 +65,7 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: BlogIdParams } // Use destructuring with the correct type
-) {
+export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -82,7 +76,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const blogId = params.id;
+  const blogId = context.params.id;
 
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is missing" }, { status: 400 });
@@ -115,7 +109,6 @@ export async function DELETE(
     return NextResponse.json({ error: "Internal server error: " + (err.message || "") }, { status: 500 });
   }
 }
-
 
 
 // import { NextRequest, NextResponse } from "next/server";

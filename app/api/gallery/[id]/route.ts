@@ -4,13 +4,8 @@ import { Database } from "@/types/supabase";
 import slugify from "slugify";
 import { deleteFileFromR2 } from "@/lib/r2";
 
-// Define the expected shape of the route parameters
-type GalleryIdParams = {
-  id: string;
-};
-
 // --- GET a single gallery post for editing ---
-export async function GET(req: NextRequest, { params }: { params: GalleryIdParams }) {
+export async function GET(req: NextRequest, context: { params: { id: string } }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: GalleryIdParam
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const galleryId = params.id;
+  const galleryId = context.params.id;
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
   }
@@ -75,7 +70,7 @@ interface UpdateGalleryRequestBody {
   tags?: string[];
 }
 
-export async function PUT(req: NextRequest, { params }: { params: GalleryIdParams }) {
+export async function PUT(req: NextRequest, context: { params: { id: string } }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -86,7 +81,7 @@ export async function PUT(req: NextRequest, { params }: { params: GalleryIdParam
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const galleryId = params.id;
+  const galleryId = context.params.id;
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
   }
@@ -175,7 +170,7 @@ export async function PUT(req: NextRequest, { params }: { params: GalleryIdParam
 }
 
 // --- DELETE a gallery post ---
-export async function DELETE(req: NextRequest, { params }: { params: GalleryIdParams }) {
+export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -186,7 +181,7 @@ export async function DELETE(req: NextRequest, { params }: { params: GalleryIdPa
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const galleryId = params.id;
+  const galleryId = context.params.id;
 
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
@@ -227,7 +222,6 @@ export async function DELETE(req: NextRequest, { params }: { params: GalleryIdPa
     return NextResponse.json({ error: "Failed to delete gallery." }, { status: 500 });
   }
 }
-
 
 
 
