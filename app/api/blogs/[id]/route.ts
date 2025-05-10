@@ -7,7 +7,7 @@ type BlogIdParams = {
 };
 
 // Use a simpler typing approach for the second argument
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: BlogIdParams }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const blogId = context.params.id;
+  const blogId = params.id;
 
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is missing from URL parameters" }, { status: 400 });
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
   }
 }
 
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: BlogIdParams }) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -76,7 +76,7 @@ export async function DELETE(req: NextRequest, context: { params: { id: string }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const blogId = context.params.id;
+  const blogId = params.id;
 
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is missing" }, { status: 400 });
