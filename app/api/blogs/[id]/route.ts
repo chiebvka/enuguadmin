@@ -10,8 +10,8 @@ interface BlogRouteParams {
 }
 
 export async function GET(
-    req: NextRequest,
-    { params }: { params: { id: string } }  
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
     const supabase = await createClient();
      const {
@@ -23,7 +23,7 @@ export async function GET(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
-    const blogId = params.id; // Get the ID from the URL path parameters
+    const blogId = context.params.id; // Get the ID from the URL path parameters
 
     if (!blogId) {
          return NextResponse.json({ error: "Blog ID is missing from URL" }, { status: 400 });
@@ -70,8 +70,8 @@ export async function GET(
 }
 
 export async function DELETE(
-    req: NextRequest,
-    { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
     const supabase = await createClient();
     const {
@@ -83,7 +83,7 @@ export async function DELETE(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const blogId = params.id;
+    const blogId = context.params.id;
 
     if (!blogId) {
         return NextResponse.json({ error: "Blog ID is missing" }, { status: 400 });
