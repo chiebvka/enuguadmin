@@ -55,17 +55,17 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "All Members",
+          title: "Members",
           url: "/protected/members",
         },
         {
-          title: "Pending Members",
-          url: "/protected/members/pending",
+          title: "Add to Feed",
+          url: "/protected/members/feed",
         },
         {
-          title: "Denied Members",
-          url: "/protected/members/denied",
-        },
+          title: "Members Feed",
+          url: "/protected/members/feed/all",
+        }
       ],
     },
     {
@@ -74,13 +74,14 @@ const data = {
       icon: Newspaper,
       items: [
         {
+          title: "Add Blog",
+          url: "/protected/blogs/create",
+        },
+        {
           title: "Blog Posts",
           url: "/protected/blogs",
         },
-        {
-          title: "Add Blog",
-          url: "/protected/blogs/create",
-        }
+      
       ],
     },
     {

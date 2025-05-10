@@ -1,9 +1,19 @@
-import React from 'react'
+import { createClient } from "@/utils/supabase/server";
+import Memberfeedwizard from './_components/member-feed-wizard'
 
-type Props = {}
+export default async function Page() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("membership_feed")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(5);
 
-export default function page({}: Props) {
+  const posts = data ?? [];
+
   return (
-    <div>page</div>
+    <div>
+      <Memberfeedwizard posts={posts} />
+    </div>
   )
 }

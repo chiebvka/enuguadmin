@@ -302,6 +302,8 @@ export type Database = {
           approved_by: string | null
           approved_on: string | null
           bio: string | null
+          blocked_by: string | null
+          blocked_on: string | null
           created_at: string
           denial_reason: string | null
           denied_by: string | null
@@ -324,6 +326,8 @@ export type Database = {
           approved_by?: string | null
           approved_on?: string | null
           bio?: string | null
+          blocked_by?: string | null
+          blocked_on?: string | null
           created_at?: string
           denial_reason?: string | null
           denied_by?: string | null
@@ -346,6 +350,8 @@ export type Database = {
           approved_by?: string | null
           approved_on?: string | null
           bio?: string | null
+          blocked_by?: string | null
+          blocked_on?: string | null
           created_at?: string
           denial_reason?: string | null
           denied_by?: string | null
@@ -374,6 +380,53 @@ export type Database = {
           {
             foreignKeyName: "membership_denied_by_fkey"
             columns: ["denied_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      membership_feed: {
+        Row: {
+          content: string | null
+          content_type: string
+          created_at: string | null
+          file_name: string | null
+          file_size_mb: number | null
+          id: string
+          media_url: string | null
+          title: string | null
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          content_type: string
+          created_at?: string | null
+          file_name?: string | null
+          file_size_mb?: number | null
+          id?: string
+          media_url?: string | null
+          title?: string | null
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          content_type?: string
+          created_at?: string | null
+          file_name?: string | null
+          file_size_mb?: number | null
+          id?: string
+          media_url?: string | null
+          title?: string | null
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membership_feed_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
