@@ -2,13 +2,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-interface TagRouteParams {
-    params: {
-        id: string; // The ID of the tag from the URL path
-    };
+interface RouteParams {
+    id: string;
 }
 
-export async function PUT(req: NextRequest, { params }: TagRouteParams) {
+export async function PUT(req: NextRequest, 
+    params: RouteParams
+) {
     const supabase = await createClient();
     const {
       data: { user },
@@ -20,8 +20,8 @@ export async function PUT(req: NextRequest, { params }: TagRouteParams) {
     }
 
     // Await params as per Next.js docs for async handlers with dynamic segments
-     const awaitedParams = await params;
-    const tagId = awaitedParams.id;
+     
+    const tagId = params?.id;
 
     if (!tagId) {
         return NextResponse.json({ error: "Tag ID is missing from URL" }, { status: 400 });
@@ -68,7 +68,9 @@ export async function PUT(req: NextRequest, { params }: TagRouteParams) {
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: TagRouteParams) {
+export async function DELETE(req: NextRequest, 
+    params: RouteParams
+) {
     const supabase = await createClient();
     const {
       data: { user },
@@ -80,8 +82,7 @@ export async function DELETE(req: NextRequest, { params }: TagRouteParams) {
     }
 
     // Await params as per Next.js docs for async handlers with dynamic segments
-     const awaitedParams = await params;
-    const tagId = awaitedParams.id;
+    const tagId = params?.id;
 
     if (!tagId) {
         return NextResponse.json({ error: "Tag ID is missing from URL" }, { status: 400 });

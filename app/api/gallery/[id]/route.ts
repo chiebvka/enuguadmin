@@ -4,15 +4,13 @@ import { Database } from "@/types/supabase";
 import slugify from "slugify";
 import { deleteFileFromR2 } from "@/lib/r2";
 
-interface GalleryRouteParams {
-    params: {
-        id: string;
-    };
+interface RouteParams {
+    id: string;
 }
 
 // --- GET a single gallery post for editing ---
 export async function GET(req: NextRequest,
-    context: { params: { id: string } }
+    params: RouteParams
 ) {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -21,7 +19,7 @@ export async function GET(req: NextRequest,
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const galleryId = context.params.id;
+    const galleryId = params?.id;
     if (!galleryId) {
         return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
     }
@@ -85,7 +83,7 @@ interface UpdateGalleryRequestBody {
     // For now, let's just update title, desc, type, tags
 }
 export async function PUT(  req: NextRequest,
-    context: { params: { id: string } }
+    params: RouteParams
 ) {
      const supabase = await createClient();
      const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -94,7 +92,7 @@ export async function PUT(  req: NextRequest,
          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
      }
 
-     const galleryId = context.params.id;
+     const galleryId = params?.id;
      if (!galleryId) {
          return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
      }
@@ -201,7 +199,9 @@ export async function PUT(  req: NextRequest,
 
 
 
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, 
+    params: RouteParams
+) {
     const supabase = await createClient();
     const {
       data: { user },
@@ -212,7 +212,7 @@ export async function DELETE(req: NextRequest, context: { params: { id: string }
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   
-    const galleryId = context.params.id;
+    const galleryId = params?.id;
   
     if (!galleryId) {
       return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });

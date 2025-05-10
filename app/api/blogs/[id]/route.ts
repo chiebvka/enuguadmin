@@ -3,15 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 // Define the expected shape of the parameters object from the dynamic route
-interface BlogRouteParams {
-    params: {
-        id: string;
-    };
+interface RouteParams {
+    id: string;
 }
 
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  params: RouteParams
 ) {
     const supabase = await createClient();
      const {
@@ -23,7 +21,7 @@ export async function GET(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
-    const blogId = context.params.id; // Get the ID from the URL path parameters
+    const blogId = params?.id; // Get the ID from the URL path parameters
 
     if (!blogId) {
          return NextResponse.json({ error: "Blog ID is missing from URL" }, { status: 400 });
@@ -71,7 +69,7 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  params: RouteParams
 ) {
     const supabase = await createClient();
     const {
@@ -83,7 +81,7 @@ export async function DELETE(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const blogId = context.params.id;
+    const blogId = params?.id;
 
     if (!blogId) {
         return NextResponse.json({ error: "Blog ID is missing" }, { status: 400 });
