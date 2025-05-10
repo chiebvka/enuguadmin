@@ -5,9 +5,7 @@ import { PlusCircle, Search, TagIcon, X, Check, Pencil, Trash, Loader2 } from "l
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { availableTags } from "@/data/mock-blogs"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import { useIsMobile } from '@/hooks/use-mobile';
 import { AddTagForm } from '@/components/add-tag-form';
 import { TagBadge } from '@/components/tag-badge';
@@ -23,7 +21,6 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"; 
 import { getCachedTags, invalidateTagsCache, CachedTag } from '@/lib/tagDataCache'; // Import cache functions
 

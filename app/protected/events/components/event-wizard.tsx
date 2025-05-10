@@ -7,15 +7,9 @@ import {
   Clock,
   MapPin,
   Plus,
-  Search,
   Edit,
   Trash2,
-  Calendar,
   ChevronRight,
-  LayoutDashboard,
-  ListChecks,
-  Settings,
-  Users,
   ChevronLeft,
   X,
   MapPinned,
@@ -31,18 +25,6 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 // Assuming these sidebar components are client-safe or handled elsewhere
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-// Assuming these drawer components are client-safe or handled elsewhere
 import {
   Drawer,
   DrawerClose,

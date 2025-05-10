@@ -1,16 +1,6 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import Quickactions from "@/components/dashboard/quick-actions";
 import { SectionCards } from "@/components/section-cards";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import Upcomingevents from "@/components/upcoming-events";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";

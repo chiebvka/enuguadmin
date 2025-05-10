@@ -3,7 +3,6 @@ import { createClient } from '@/utils/supabase/server';
 import { Tag } from '@/components/tag-selector'; // Assuming exported from tag-selector
 import Gallerywizard from '../add/components/gallery-wizard';
 import { notFound } from 'next/navigation';
-import { Database } from '@/types/supabase';
 
 // Define expected types for fetched gallery data (align with GET response)
 type FetchedGalleryImage = { // More specific type for selected image fields

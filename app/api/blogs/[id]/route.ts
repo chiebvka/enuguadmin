@@ -9,7 +9,10 @@ interface BlogRouteParams {
     };
 }
 
-export async function GET(req: NextRequest, { params }: BlogRouteParams) {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { id: string } }  
+) {
     const supabase = await createClient();
      const {
         data: { user },
@@ -66,7 +69,10 @@ export async function GET(req: NextRequest, { params }: BlogRouteParams) {
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: BlogRouteParams) {
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
     const supabase = await createClient();
     const {
         data: { user },

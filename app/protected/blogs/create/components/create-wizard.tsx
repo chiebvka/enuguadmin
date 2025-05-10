@@ -1,7 +1,7 @@
 "use client"
 
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FileUploader } from "@/components/file-uploader";
 import { TagSelector } from "@/components/tag-selector";
 import { TipTapEditor } from "@/components/tiptap-editor";
@@ -24,7 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { invalidateBlogsCache } from '@/lib/blogDataCache'; // Import cache invalidation

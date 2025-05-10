@@ -26,15 +26,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator";
 import {
-    type ChartConfig,
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent,
-  } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import {
   Check,
   X,
   Mail,
@@ -46,9 +37,6 @@ import {
   User,
   UserCheck,
   UserX,
-  PieChart,
-  TrendingUp,
-  Filter,
   ChevronUp,
   ChevronDown,
   MoreHorizontal,
@@ -69,7 +57,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
 import jsPDF from 'jspdf';

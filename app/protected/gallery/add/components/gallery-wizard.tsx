@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { TagSelector, Tag } from "@/components/tag-selector"
 import { ArrowLeft, ImageIcon, Film, Info, X, Loader2, Trash2 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { 
     AlertDialog, 
     AlertDialogAction, 
