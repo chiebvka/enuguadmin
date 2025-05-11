@@ -3,7 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 
 
 export async function GET(
-    req: NextRequest, { params }: { params: { blogId: string } }
+    req: NextRequest, 
+    context: { params: { blogId: string } }
 ) {
   const supabase = await createClient();
   const {
@@ -15,7 +16,8 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { blogId } =  params;
+  const { params } = context;
+  const { blogId } = params;
 
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is missing from URL parameters" }, { status: 400 });
