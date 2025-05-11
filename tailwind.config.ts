@@ -32,6 +32,10 @@ const config = {
   				DEFAULT: 'rgb(28, 165, 94)',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
+  			bexoni: {
+  				DEFAULT: 'oklch(0.597 0.248 298.9)',
+  				foreground: 'hsl(var(--primary-foreground))'
+  			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'

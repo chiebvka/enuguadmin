@@ -83,27 +83,12 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem  className="flex items-center cursor-pointer space-x-4">
-                <Sparkles className="mr-2 size-4" />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
                 <Link href="/protected/reset-password">
                     <DropdownMenuItem className="flex items-center cursor-pointer space-x-4">
                         <Cog className="mr-2 size-4" />
                         Reset Password
                     </DropdownMenuItem>
                 </Link>
-              <DropdownMenuItem className="flex items-center cursor-pointer space-x-4">
-                <CreditCard  className="mr-2 size-4" />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center cursor-pointer space-x-4">
-                <Bell  className="mr-2 size-4" />
-                Notifications
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator  className="mr-2 size-4" />
             <form action={signOutAction}>

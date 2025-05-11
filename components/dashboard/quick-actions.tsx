@@ -13,38 +13,37 @@ type Props = {}
 
 export default function Quickactions({}: Props) {
   return (
-    <div>
-             <Card className="col-span-1 row-span-1">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-base font-medium">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-4">
-                  <Button className="flex h-24 flex-col items-center justify-center gap-1 bg-[#006400] hover:bg-[#004d00]" asChild>
-                    <Link href="/protected/members">
-                      <UserPlus className="h-8 w-8" />
-                      <span>Add Member</span>
-                    </Link>
-                  </Button>
-                  <Button className="flex h-24 flex-col items-center justify-center gap-1 bg-[#D4AF37] hover:bg-[#b8941f] text-black" asChild>
-                    <Link href="/protected/events">
-                      <Calendar className="h-8 w-8" />
-                      <span>New Event</span>
-                    </Link>
-                  </Button>
-                  <Button className="flex h-24 flex-col items-center justify-center gap-1" asChild>
-                    <Link href="/protected/blogs">
-                      <PenSquare className="h-8 w-8" />
-                      <span>New Post</span>
-                    </Link>
-                  </Button>
-                  <Button className="flex h-24 flex-col items-center justify-center gap-1" asChild>
-                    <Link href="/protected/photos">
-                      <ImageIcon className="h-8 w-8" />
-                      <span>Add Photos</span>
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-    </div>
+      <Card className="col-span-1 mx-2 row-span-1">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-base font-medium">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-row gap-2">
+          <Button className="flex items-center justify-center bg-[#006400] hover:bg-[#004d00]" asChild>
+            <Link href="/protected/members/feed" >
+              <UserPlus className="h-4 w-4 " />
+              Approve Member
+            </Link>
+          </Button>
+          <Button className="flex items-center justify-center bg-[#D4AF37] hover:bg-[#b8941f] text-black" asChild>
+            <Link href="/protected/events">
+              <Calendar className="h-4 w-4" />
+              <span>Add Event</span>
+            </Link>
+          </Button>
+          <Button className="flex items-center justify-center" asChild>
+            <Link href="/protected/blogs/create">
+              <PenSquare className="h-4 w-4" />
+              <span>Add Blog</span>
+            </Link>
+          </Button>
+          <Button className="flex items-center justify-center" asChild>
+            <Link href="/protected/gallery/add">
+              <ImageIcon className="h-4 w-4" />
+              <span>Add Gallery</span>
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
   )
 }

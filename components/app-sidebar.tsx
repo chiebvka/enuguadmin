@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  BadgeHelp,
   BookOpen,
   Frame,
   GalleryVerticalEnd,
@@ -11,6 +12,8 @@ import {
   Map,
   Newspaper,
   PieChart,
+  Siren,
+  StopCircle,
 } from "lucide-react"
 
 import {
@@ -129,19 +132,14 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Error Message?",
       url: "#",
-      icon: Frame,
+      icon: Siren,
     },
     {
-      name: "Sales & Marketing",
+      name: "Need Support?",
       url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      icon: BadgeHelp,
     },
   ],
 }
@@ -165,7 +163,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={data.projects} userEmail={userData.email} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={userData} />

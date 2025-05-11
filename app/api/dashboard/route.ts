@@ -14,43 +14,74 @@ function calculateChange(current: number, past: number): number {
   return ((current - past) / past) * 100
 }
 
+// Helper function to calculate membership trend for the chart
+function calculateMembershipTrend(chartDataForTrend: { month: string, approved: number, pending: number }[]): number | null {
+  if (!chartDataForTrend || chartDataForTrend.length < 2) {
+    return null;
+  }
+  // Use the last two available months from the chart data for trend calculation
+  const currentMonthData = chartDataForTrend[chartDataForTrend.length - 1];
+  const previousMonthData = chartDataForTrend[chartDataForTrend.length - 2];
+
+  if (!currentMonthData || !previousMonthData) return null;
+
+  const currentTotal = (currentMonthData.approved || 0) + (currentMonthData.pending || 0);
+  const previousTotal = (previousMonthData.approved || 0) + (previousMonthData.pending || 0);
+
+  if (previousTotal === 0) {
+    return currentTotal > 0 ? 100 : 0; // Avoid division by zero, show 100% if current is positive
+  }
+  
+  const trend = ((currentTotal - previousTotal) / previousTotal) * 100;
+  return trend;
+}
+
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
 
   const today = new Date()
-  const startRange = startOfMonth(subMonths(today, 3))
-  const endRange = endOfMonth(today)
+  // Fetch members created in the last 6 months for the chart
+  const startRangeChart = startOfMonth(subMonths(today, 5)) // 5 months ago to include current month (total 6 months)
+  const endRangeChart = endOfMonth(today)
 
-  // Fetch members created in the last 4 months
-  const { data: members, error: membersError } = await supabase
+  // Fetch members for chart
+  const { data: membersForChart, error: membersError } = await supabase
     .from("membership")
     .select("id, created_at, status")
-    .gte("created_at", startRange.toISOString())
-    .lte("created_at", endRange.toISOString())
+    .gte("created_at", startRangeChart.toISOString())
+    .lte("created_at", endRangeChart.toISOString())
     .order("created_at", { ascending: false })
 
   if (membersError) {
+    console.error("Error fetching members:", membersError.message)
     return NextResponse.json({ error: membersError.message }, { status: 500 })
   }
 
-  // Chart data by month (last 3 months)
-  const chartData = Array.from({ length: 3 }).map((_, i) => {
-    const monthDate = subMonths(today, 2 - i); // 2 - i: 0=>2mo ago, 1=>1mo ago, 2=>this month
-    const label = format(monthDate, "MMMM");
+
+  // Chart data by month (last 6 months)
+  const chartData = Array.from({ length: 6 }).map((_, i) => {
+    const monthDate = subMonths(today, 5 - i); // 5 - i: 0=>5mo ago, ..., 5=>this month
+    const label = format(monthDate, "MMM"); // e.g., Jan, Feb
     const monthStart = startOfMonth(monthDate);
     const monthEnd = endOfMonth(monthDate);
 
-    const membersInMonth = members.filter((m) =>
+    const membersInMonth = (membersForChart || []).filter((m) =>
       isWithinInterval(parseISO(m.created_at), { start: monthStart, end: monthEnd })
     );
 
     const approved = membersInMonth.filter((m) => m.status === "approved").length;
-    const pending = membersInMonth.length - approved;
+    // Consistent with how members page defines pending for its chart
+    const pending = membersInMonth.filter(
+        (m) => m.status !== "approved" && m.status !== "declined" && m.status !== "blocked"
+      ).length;
+
 
     return { month: label, approved, pending };
   });
+  
+  const membershipTrend = calculateMembershipTrend(chartData);
 
-  // Time ranges for trend comparison
+  // Time ranges for trend comparison for cards (remains 1 month vs previous month)
   const now = new Date()
   const oneMonthFromNow = new Date(now)
   oneMonthFromNow.setMonth(now.getMonth() + 1)
@@ -186,6 +217,7 @@ const [
 
   return NextResponse.json({
     chartData,
+    membershipTrend,
     sectionCards: {
       totalMembers: recentMembers,
       upcomingEvents,
