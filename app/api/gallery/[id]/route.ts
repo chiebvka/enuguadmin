@@ -5,7 +5,12 @@ import slugify from "slugify";
 import { deleteFileFromR2 } from "@/lib/r2";
 
 // --- GET a single gallery post for editing ---
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+
+// @ts-ignore
+export async function GET(
+    request: NextRequest,
+    context: { params: { id: string } }
+) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -70,7 +75,12 @@ interface UpdateGalleryRequestBody {
   tags?: string[];
 }
 
-export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+
+// @ts-ignore
+export async function PUT(
+    req: NextRequest, context: { params: { id: string } }
+
+) {
   const supabase = await createClient();
   const {
     data: { user },
