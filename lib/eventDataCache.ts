@@ -15,14 +15,14 @@ export interface CachedEvent {
   status: "upcoming" | "past" | "draft" | "cancelled";
 }
 
-let cachedEvents: CachedEvent[] | null = null;
+let cachedEvents: CachedEvent[] = [];
 let lastFetchTime: number | null = null;
 const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes cache duration
 
 export async function getCachedEvents(forceRefresh: boolean = false): Promise<CachedEvent[]> {
   const now = Date.now();
 
-  if (!forceRefresh && cachedEvents && lastFetchTime && (now - lastFetchTime < CACHE_DURATION_MS)) {
+  if (!forceRefresh && cachedEvents.length > 0 && lastFetchTime && (now - lastFetchTime < CACHE_DURATION_MS)) {
     console.log("Returning cached events");
     return cachedEvents;
   }
@@ -37,12 +37,12 @@ export async function getCachedEvents(forceRefresh: boolean = false): Promise<Ca
   } catch (error) {
     console.error("Failed to fetch events for cache:", error);
     toast.error("Failed to load events.");
-    return cachedEvents || []; 
+    return cachedEvents; 
   }
 }
 
 export function invalidateEventsCache(): void {
   console.log("Invalidating events cache");
-  cachedEvents = null;
+  cachedEvents = [];
   lastFetchTime = null;
 } 

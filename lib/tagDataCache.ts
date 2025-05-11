@@ -8,14 +8,14 @@ export interface CachedTag {
   profile_id?: string; // Optional, align with Tagswizard's Tag type
 }
 
-let cachedTags: CachedTag[] | null = null;
+let cachedTags: CachedTag[] = [];
 let lastFetchTime: number | null = null;
 const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes cache duration
 
 export async function getCachedTags(forceRefresh: boolean = false): Promise<CachedTag[]> {
   const now = Date.now();
 
-  if (!forceRefresh && cachedTags && lastFetchTime && (now - lastFetchTime < CACHE_DURATION_MS)) {
+  if (!forceRefresh && cachedTags.length > 0 && lastFetchTime && (now - lastFetchTime < CACHE_DURATION_MS)) {
     console.log("Returning cached tags");
     return cachedTags;
   }
@@ -29,12 +29,12 @@ export async function getCachedTags(forceRefresh: boolean = false): Promise<Cach
   } catch (error) {
     console.error("Failed to fetch tags for cache:", error);
     toast.error("Failed to load tags.");
-    return cachedTags || [];
+    return cachedTags;
   }
 }
 
 export function invalidateTagsCache(): void {
   console.log("Invalidating tags cache");
-  cachedTags = null;
+  cachedTags = [];
   lastFetchTime = null;
 } 
