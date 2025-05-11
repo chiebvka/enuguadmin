@@ -8,8 +8,12 @@ import { deleteFileFromR2 } from "@/lib/r2";
 
 // @ts-ignore
 export async function GET(
-    req: NextRequest, { params }: { params: { galleryId: string } }
+    req: NextRequest, 
+    context: any
 ) {
+  const { params } = context;
+  const { galleryId } = params;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -19,8 +23,6 @@ export async function GET(
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const { galleryId } =  params;
 
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
@@ -78,9 +80,12 @@ interface UpdateGalleryRequestBody {
 
 // @ts-ignore
 export async function PUT(
-    req: NextRequest, { params }: { params: { galleryId: string } }
-
+    req: NextRequest, 
+    context: any
 ) {
+  const { params } = context;
+  const { galleryId } = params;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -91,7 +96,6 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { galleryId } =  params;
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
   }
@@ -181,8 +185,12 @@ export async function PUT(
 
 // --- DELETE a gallery post ---
 export async function DELETE(
-    req: NextRequest, { params }: { params: { galleryId: string } }
+    req: NextRequest, 
+    context: any
 ) {
+  const { params } = context;
+  const { galleryId } = params;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -192,7 +200,6 @@ export async function DELETE(
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { galleryId } =  params;
 
   if (!galleryId) {
     return NextResponse.json({ error: "Gallery ID is missing" }, { status: 400 });
