@@ -1,4 +1,4 @@
-// app/protected/blogs/[id]/page.tsx
+// app/protected/blogs/[blogId]/page.tsx
 import React from 'react';
 import Createwizard from '../create/components/create-wizard';
 import { createClient } from '@/utils/supabase/server';
@@ -25,14 +25,9 @@ interface Tag {
 }
 
 
-// Props will include the dynamic 'id' segment
+// Props will include the dynamic 'blogId' segment
 type Props = {
-  params: {
-      id: string;
-  };
-  // Note: If Next.js makes `params` a Promise at runtime due to dynamic rendering,
-  // the static type here might not fully reflect that. However, `await params`
-  // will correctly handle both a Promise and an already resolved object.
+  params: Promise<{ blogId: string }>;
 };
 
 
@@ -140,7 +135,7 @@ async function fetchAvailableTags(): Promise<Tag[]> {
 export default async function EditBlogPostPage({ params }: Props) {
   // Await params as suggested by the error message when de-opted to dynamic rendering
   const resolvedParams = await params;
-  const blogId = resolvedParams.id;
+  const blogId = resolvedParams.blogId;
 
   // Fetch both the specific blog post and the available tags in parallel
   const [blogPostData, availableTags] = await Promise.all([ // Renamed to avoid conflict with blogPost variable below
