@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 // --- PUT (Update) an existing tag ---
-export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+export async function PUT(
+    req: NextRequest, { params }: { params: { id: string } }
+) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -13,7 +15,8 @@ export async function PUT(req: NextRequest, context: { params: { id: string } })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const tagId = context.params.id;
+  const { id } =  params;
+  const tagId = id;
 
   if (!tagId) {
     return NextResponse.json({ error: "Tag ID is missing from URL" }, { status: 400 });
@@ -57,7 +60,9 @@ export async function PUT(req: NextRequest, context: { params: { id: string } })
 }
 
 // --- DELETE a tag ---
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(
+    req: NextRequest, { params }: { params: { id: string } }
+) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -68,7 +73,8 @@ export async function DELETE(req: NextRequest, context: { params: { id: string }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const tagId = context.params.id;
+  const { id } =  params;
+  const tagId = id;
 
   if (!tagId) {
     return NextResponse.json({ error: "Tag ID is missing from URL" }, { status: 400 });
