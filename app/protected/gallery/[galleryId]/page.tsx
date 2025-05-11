@@ -26,9 +26,7 @@ interface FetchedGalleryPost {
 
 // Props for the page component
 type Props = {
-  params: {
-      id: string;
-  };
+  params: Promise<{ galleryId: string }>;
 };
 
 // Fetch single gallery post data
@@ -100,11 +98,9 @@ async function fetchAvailableTags(): Promise<Tag[]> {
 }
 
 // The Page Component
-export default async function EditGalleryPage(
-    { params }: { params: { id: string } }
-) {
-   
-    const galleryId =  params?.id;
+export default async function EditGalleryPage({ params }: Props) {
+    const resolvedParams = await params;
+    const galleryId = resolvedParams.galleryId;
 
     // Fetch gallery post and available tags in parallel
     const [galleryPostData, availableTagsData] = await Promise.all([
