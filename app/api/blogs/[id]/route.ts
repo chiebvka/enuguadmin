@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-// Define the expected shape of the route parameters
-type BlogIdParams = {
-  id: string;
-};
-
 // Use a simpler typing approach for the second argument
-export async function GET(req: NextRequest, { params }: { params: BlogIdParams }) {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -65,7 +63,10 @@ export async function GET(req: NextRequest, { params }: { params: BlogIdParams }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: BlogIdParams }) {
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
   const supabase = await createClient();
   const {
     data: { user },
