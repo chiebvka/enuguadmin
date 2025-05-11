@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-interface GalleryImageRouteParams {
-    params: {
-        id: string; // This is the ID from the galleryimages table
-    };
-}
-
 // --- DELETE a single gallery image ---
-export async function DELETE(req: NextRequest, { params }: GalleryImageRouteParams) {
+export async function DELETE(
+    req: NextRequest, 
+    context: any
+) {
+    const { params } = context;
+    const { imageId } = params; // ID of the galleryimages record
+
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -16,7 +16,6 @@ export async function DELETE(req: NextRequest, { params }: GalleryImageRoutePara
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const imageId = params.id; // ID of the galleryimages record
     if (!imageId) {
         return NextResponse.json({ error: "Image ID is missing" }, { status: 400 });
     }
