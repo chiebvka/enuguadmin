@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 
 
 export async function GET(
-    req: NextRequest, { params }: { params: { id: string } }
+    req: NextRequest, { params }: { params: { blogId: string } }
 ) {
   const supabase = await createClient();
   const {
@@ -15,8 +15,7 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } =  params;
-  const blogId = id;
+  const { blogId } =  params;
 
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is missing from URL parameters" }, { status: 400 });
@@ -65,7 +64,7 @@ export async function GET(
 
 
 export async function DELETE(
-    req: NextRequest, { params }: { params: { id: string } }
+    req: NextRequest, { params }: { params: { blogId: string } }
 ) {
   const supabase = await createClient();
   const {
@@ -77,8 +76,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } =  params;
-  const blogId = id;
+  const { blogId } =  params;
 
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is missing" }, { status: 400 });

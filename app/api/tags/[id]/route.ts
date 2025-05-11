@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 
 // --- PUT (Update) an existing tag ---
 export async function PUT(
-    req: NextRequest, { params }: { params: { id: string } }
+    req: NextRequest, { params }: { params: { tagId: string } }
 ) {
   const supabase = await createClient();
   const {
@@ -15,8 +15,7 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } =  params;
-  const tagId = id;
+  const { tagId } =  params;
 
   if (!tagId) {
     return NextResponse.json({ error: "Tag ID is missing from URL" }, { status: 400 });
@@ -61,7 +60,7 @@ export async function PUT(
 
 // --- DELETE a tag ---
 export async function DELETE(
-    req: NextRequest, { params }: { params: { id: string } }
+    req: NextRequest, { params }: { params: { tagId: string } }
 ) {
   const supabase = await createClient();
   const {
@@ -73,8 +72,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } =  params;
-  const tagId = id;
+  const { tagId } =  params;
 
   if (!tagId) {
     return NextResponse.json({ error: "Tag ID is missing from URL" }, { status: 400 });
