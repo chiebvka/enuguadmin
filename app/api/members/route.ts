@@ -86,7 +86,29 @@ export async function GET(req: NextRequest) {
   // This might be paginated or filtered on the client-side, or you can add params here
   const { data: memberList, error: memberListError } = await supabase
     .from("membership")
-    .select("*") // Select all columns for the list
+    .select(
+      `
+      id, 
+      name, 
+      first_name, 
+      last_name, 
+      dob_day, 
+      dob_month, 
+      lga, 
+      mobile, 
+      email, 
+      address, 
+      bio, 
+      created_at, 
+      status, 
+      member_no, 
+      approved_on, 
+      denied_on, 
+      denial_reason, 
+      blocked_on,
+      dob
+    `
+    ) // Select specific columns including dob_day and dob_month
     .order("created_at", { ascending: false }) // Example: show newest first
 
   if (memberListError) {

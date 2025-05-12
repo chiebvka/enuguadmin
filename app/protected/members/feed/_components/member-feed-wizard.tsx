@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,11 +25,13 @@ interface MemberfeedwizardProps {
 
 // Zod schema for validation
 const postSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
+  title: z.string().min(1, "Title is required").max(150, "Title is too long"),
+  content: z.string().min(1, "Content is required").max(2000, "Content is too long"),
 });
 
 export default function Memberfeedwizard({ posts: initialPosts }: MemberfeedwizardProps) {
+  const searchParams = useSearchParams();
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [contentType, setContentType] = useState<"text" | "image" | "video" | "file">("text");
@@ -43,6 +46,15 @@ export default function Memberfeedwizard({ posts: initialPosts }: Memberfeedwiza
 
   // Use the posts passed from the server
   const posts = initialPosts;
+
+  useEffect(() => {
+    const birthdayName = searchParams.get('birthdayName');
+    if (birthdayName) {
+      setTitle(`Happy Birthday, ${birthdayName}! 🎉`);
+      setContent(`Join us in wishing ${birthdayName} a very happy birthday today! 🥳🎂 Let's make their day special!`);
+      setContentType("text");
+    }
+  }, [searchParams]);
 
   const handleFileChange = async (url: string | null) => {
     setMediaUrl(url);
@@ -80,7 +92,7 @@ export default function Memberfeedwizard({ posts: initialPosts }: Memberfeedwiza
         if (err.path[0] === "content") errors.content = err.message;
       });
       setFormErrors(errors);
-      toast.error("Please fill in all required fields.");
+      toast.error("Please fill in all required fields correctly.");
       return;
     }
 

@@ -1,7 +1,7 @@
-
 import Quickactions from "@/components/dashboard/quick-actions";
 import { SectionCards } from "@/components/section-cards";
 import Upcomingevents from "@/components/upcoming-events";
+import UpcomingBirthdays from "@/components/upcoming-birthdays";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardChart from "./_components/dashboard-chart";
@@ -25,7 +25,7 @@ export default async function ProtectedPage() {
     cache: "no-store",
   });
 
-  const { sectionCards, upcomingEventsList } = await res.json();
+  const { sectionCards, upcomingEventsList, upcomingBirthdaysList } = await res.json();
 
   return (
     <>
@@ -35,10 +35,16 @@ export default async function ProtectedPage() {
             <div className="flex flex-col gap-4 py-4 md:gap-6">
               <SectionCards data={sectionCards} />
     
-              <div className="grid gap-6 px-6 md:grid-cols-2 ">
+              {/* Combined grid for Chart, Events, and Birthdays */}
+              <div className="grid grid-cols-1 gap-6 px-6 md:grid-cols-3">
+                {/* DashboardChart can span 1 or more columns based on design preference */}
+                {/* For a simple 3-column layout, it takes 1 column. 
+                    If it needs more space, you can use md:col-span-2 for the chart
+                    and then adjust the other two or stack them.
+                    Assuming an equal 3-column split for now. */}
                 <DashboardChart />
-               
                 <Upcomingevents events={upcomingEventsList} />
+                <UpcomingBirthdays birthdays={upcomingBirthdaysList} />
               </div>
         
               {/* <DataTable data={data} /> */}

@@ -7,6 +7,9 @@ import {
   format,
   parseISO,
   isWithinInterval,
+  addDays,
+  startOfDay,
+  isToday as dateFnsIsToday,
 } from "date-fns"
 
 function calculateChange(current: number, past: number): number {
@@ -101,6 +104,7 @@ const [
     { count: approvedCount = 0 },
     { count: recentMembers = 0 },
     { count: pastMembers = 0 },
+    { data: approvedMembersForBirthdays, error: approvedMembersError },
   ] = await Promise.all([
     supabase
       .from("events")
@@ -144,62 +148,17 @@ const [
       .select("*", { count: "exact", head: true })
       .gte("created_at", pastStart.toISOString())
       .lte("created_at", pastEnd.toISOString()),
-  ])  // Parallel counts
+    // Fetch approved members for birthday calculation
+    supabase
+      .from("membership")
+      .select("id, first_name, last_name, dob_day, dob_month")
+      .eq("status", "approved"),
+  ])
 
-
-//   const [
-//     { count: upcomingEvents = 0 },
-//     { count: previousEvents = 0 },
-//     { count: recentPosts = 0 },
-//     { count: pastPosts = 0 },
-//     { count: approvedCount = 0 },
-//     { count: recentMembers = 0 },
-//     { count: pastMembers = 0 },
-//   ] = await Promise.all([
-//     supabase
-//       .from("events")
-//       .select("*", { count: "exact", head: true })
-//       .gte("start_date", now.toISOString())
-//       .lte("start_date", oneMonthFromNow.toISOString()),
-
-//     supabase
-//       .from("events")
-//       .select("*", { count: "exact", head: true })
-//       .gte("start_date", pastStart.toISOString())
-//       .lte("start_date", pastEnd.toISOString()),
-
-//     supabase
-//       .from("blogposts")
-//       .select("*", { count: "exact", head: true })
-//       .gte("created_at", recentStart.toISOString())
-//       .lte("created_at", recentEnd.toISOString()),
-
-//     supabase
-//       .from("blogposts")
-//       .select("*", { count: "exact", head: true })
-//       .gte("created_at", pastStart.toISOString())
-//       .lte("created_at", pastEnd.toISOString()),
-
-//     supabase
-//       .from("membership")
-//       .select("*", { count: "exact", head: true })
-//       .eq("status", "approved")
-//       .gte("created_at", recentStart.toISOString())
-//       .lte("created_at", recentEnd.toISOString()),
-
-//     supabase
-//       .from("membership")
-//       .select("*", { count: "exact", head: true })
-//       .gte("created_at", recentStart.toISOString())
-//       .lte("created_at", recentEnd.toISOString()),
-
-//     supabase
-//       .from("membership")
-//       .select("*", { count: "exact", head: true })
-//       .gte("created_at", pastStart.toISOString())
-//       .lte("created_at", pastEnd.toISOString()),
-//   ])
-
+  if (approvedMembersError) {
+    console.error("Error fetching approved members for birthdays:", approvedMembersError.message)
+    // Decide if this error is critical or if you can proceed without birthday data
+  }
 
   // Metric calculations
   const membershipChange = calculateChange(recentMembers ?? 0, pastMembers ?? 0)
@@ -214,6 +173,89 @@ const [
     .gte("event_date", now.toISOString())
     .lte("event_date", oneMonthFromNow.toISOString())
     .order("event_date", { ascending: true });
+
+  // Calculate upcoming birthdays
+  const currentDateNormalized = startOfDay(now)
+  const thirtyDaysFromNow = addDays(currentDateNormalized, 30)
+
+  const upcomingBirthdaysList = (approvedMembersForBirthdays || [])
+    .map((member) => {
+      if (!member.dob_day || !member.dob_month) return null
+
+      const day = parseInt(member.dob_day, 10)
+      let monthIndex = -1
+
+      const monthNum = parseInt(member.dob_month, 10)
+      if (!isNaN(monthNum) && monthNum >= 1 && monthNum <= 12) {
+        monthIndex = monthNum - 1 // 0-indexed for Date constructor
+      } else {
+        const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+        const shortMonthNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+        const lowerMonth = member.dob_month.toLowerCase()
+        monthIndex = monthNames.indexOf(lowerMonth)
+        if (monthIndex === -1) {
+          monthIndex = shortMonthNames.indexOf(lowerMonth)
+        }
+      }
+
+      if (isNaN(day) || day < 1 || day > 31 || monthIndex === -1) {
+        return null // Invalid date parts
+      }
+
+      const currentYear = currentDateNormalized.getFullYear()
+      
+      let birthdayCurrentYear = new Date(currentYear, monthIndex, day) // Not using startOfDay here for direct isToday check
+      let birthdayNextYear = new Date(currentYear + 1, monthIndex, day)
+
+      let actualBirthdayDateForRangeCheck: Date | null = null
+      let isBirthdayToday = false
+
+      // Check if birthday (current year) is today
+      if (dateFnsIsToday(birthdayCurrentYear)) {
+        isBirthdayToday = true;
+        actualBirthdayDateForRangeCheck = startOfDay(birthdayCurrentYear); // Use for range check
+      }
+
+      // If not today, check if it's within the 30-day range
+      if (!actualBirthdayDateForRangeCheck) {
+        const bdCurrentYearNormalized = startOfDay(birthdayCurrentYear);
+        if (isWithinInterval(bdCurrentYearNormalized, { start: currentDateNormalized, end: thirtyDaysFromNow })) {
+          actualBirthdayDateForRangeCheck = bdCurrentYearNormalized
+        } else {
+          const bdNextYearNormalized = startOfDay(birthdayNextYear);
+          if (isWithinInterval(bdNextYearNormalized, { start: currentDateNormalized, end: thirtyDaysFromNow })) {
+            actualBirthdayDateForRangeCheck = bdNextYearNormalized;
+          }
+        }
+      }
+      
+      if (actualBirthdayDateForRangeCheck) {
+        return {
+          id: member.id,
+          first_name: member.first_name,
+          last_name: member.last_name,
+          dob_day: member.dob_day,
+          dob_month: member.dob_month,
+          isBirthdayToday: isBirthdayToday, // Add this flag
+          birthday_date_for_sort: actualBirthdayDateForRangeCheck,
+        }
+      }
+      return null
+    })
+    .filter(Boolean) // Remove nulls
+    .sort((a: any, b: any) => {
+      // Prioritize today's birthdays first, then sort by date
+      if (a.isBirthdayToday && !b.isBirthdayToday) return -1;
+      if (!a.isBirthdayToday && b.isBirthdayToday) return 1;
+      return a.birthday_date_for_sort.getTime() - b.birthday_date_for_sort.getTime();
+    }) 
+    .map((b: any) => ({ 
+        id: b.id,
+        name: `${b.first_name || ""} ${b.last_name || ""}`.trim(),
+        dob_day: b.dob_day,
+        dob_month: b.dob_month,
+        isBirthdayToday: b.isBirthdayToday,
+    }));
 
   return NextResponse.json({
     chartData,
@@ -230,6 +272,7 @@ const [
       },
     },
     upcomingEventsList,
+    upcomingBirthdaysList,
   })
 }
 

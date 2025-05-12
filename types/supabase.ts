@@ -120,18 +120,44 @@ export type Database = {
       }
       event_participant: {
         Row: {
+          adult: number | null
           created_at: string
+          event_id: string | null
+          females: number | null
           id: string
+          kids: number | null
+          males: number | null
+          people: number | null
         }
         Insert: {
+          adult?: number | null
           created_at?: string
+          event_id?: string | null
+          females?: number | null
           id?: string
+          kids?: number | null
+          males?: number | null
+          people?: number | null
         }
         Update: {
+          adult?: number | null
           created_at?: string
+          event_id?: string | null
+          females?: number | null
           id?: string
+          kids?: number | null
+          males?: number | null
+          people?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "event_participant_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
@@ -309,6 +335,8 @@ export type Database = {
           denied_by: string | null
           denied_on: string | null
           dob: string | null
+          dob_month: string | null
+          dob_year: string | null
           email: string | null
           first_name: string | null
           id: number
@@ -333,6 +361,8 @@ export type Database = {
           denied_by?: string | null
           denied_on?: string | null
           dob?: string | null
+          dob_month?: string | null
+          dob_year?: string | null
           email?: string | null
           first_name?: string | null
           id?: number
@@ -357,6 +387,8 @@ export type Database = {
           denied_by?: string | null
           denied_on?: string | null
           dob?: string | null
+          dob_month?: string | null
+          dob_year?: string | null
           email?: string | null
           first_name?: string | null
           id?: number

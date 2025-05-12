@@ -72,16 +72,16 @@ const data = {
       ],
     },
     {
-      title: "Blogs & News",
+      title: "Projects & News",
       url: "/protected/blogs",
       icon: Newspaper,
       items: [
         {
-          title: "Add Blog",
+          title: "Add Project and News",
           url: "/protected/blogs/create",
         },
         {
-          title: "Blog Posts",
+          title: "Project & News Posts",
           url: "/protected/blogs",
         },
       
