@@ -6,16 +6,48 @@ import { createClient } from '@/utils/supabase/server'
 
 export async function GET() {
     const supabase = await createClient()
-    const { data, error } = await supabase
+    const { data: events, error: eventsError } = await supabase
       .from('events')
       .select('*')
       .order('event_date', { ascending: false })
 
-    //   console.log(data)
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (eventsError) {
+      return NextResponse.json({ error: eventsError.message }, { status: 500 })
     }
-    return NextResponse.json(data, { status: 200 })
+
+    if (!events) {
+        return NextResponse.json([], { status: 200 }); // Return empty array if no events
+    }
+
+    // For each event, fetch and aggregate participant data
+    const eventsWithParticipants = await Promise.all(
+      events.map(async (event) => {
+        const { data: participantsData, error: participantsError } = await supabase
+          .from('event_participant')
+          .select('adult, kids, males, females, people')
+          .eq('event_id', event.id);
+
+        if (participantsError) {
+          console.error(`Failed to fetch participants for event ${event.id}:`, participantsError.message);
+          // Return event data without participant counts or with a specific error indicator
+          return { ...event, participantCounts: null };
+        }
+
+        const participantCounts = {
+          totalAttendees: participantsData.reduce((sum, p) => sum + (p.people || 0), 0),
+          totalAdults: participantsData.reduce((sum, p) => sum + (p.adult || 0), 0),
+          totalKids: participantsData.reduce((sum, p) => sum + (p.kids || 0), 0),
+          totalMales: participantsData.reduce((sum, p) => sum + (p.males || 0), 0),
+          totalFemales: participantsData.reduce((sum, p) => sum + (p.females || 0), 0),
+        };
+        return { ...event, participantCounts };
+      })
+    );
+
+    // Log the data that will be sent to the client
+    console.log('API /api/events GET response data:', JSON.stringify(eventsWithParticipants, null, 2));
+
+    return NextResponse.json(eventsWithParticipants, { status: 200 })
 }
 
 export async function POST(req: NextRequest) {

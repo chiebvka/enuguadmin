@@ -340,7 +340,7 @@ export default function Gallerywizard({ availableTags, galleryId: initialGallery
     const maxNewFiles = galleryId ? Math.max(0, 7 - existingImages.length) : 7;
 
     return (
-        <div className="container mx-auto py-6">
+        <div className="md:container mx-auto py-6">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                     <Button variant="outline" size="icon" asChild>
@@ -348,7 +348,7 @@ export default function Gallerywizard({ availableTags, galleryId: initialGallery
                             <ArrowLeft className="h-4 w-4" />
                         </Link>
                     </Button>
-                    <h1 className="text-3xl font-bold">{galleryId ? 'Edit Gallery' : 'Upload to Gallery'}</h1>
+                    <h1 className="md:text-3xl text-lg font-bold">{galleryId ? 'Edit Gallery' : 'Upload to Gallery'}</h1>
                 </div>
                 {galleryId && (
                     <AlertDialog>

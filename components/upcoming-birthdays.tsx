@@ -57,37 +57,37 @@ export default function UpcomingBirthdays({ birthdays }: Props) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-3 pt-4">
         <CardTitle>Upcoming Birthdays</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0 pb-3">
         {hasBirthdays ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {birthdaysToShow.map(member => (
-              <div key={member.id} className="flex items-center gap-4">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-lg text-white ${member.isBirthdayToday ? 'bg-yellow-500' : 'bg-pink-500'}`}>
-                  {member.isBirthdayToday ? <PartyPopper className="h-7 w-7" /> : <Gift className="h-6 w-6" />}
+              <div key={member.id} className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg text-white ${member.isBirthdayToday ? 'bg-yellow-500' : 'bg-pink-500'}`}>
+                  {member.isBirthdayToday ? <PartyPopper className="h-6 w-6" /> : <Gift className="h-5 w-5" />}
                 </div>
-                <div className="flex-1 space-y-1">
+                <div className="flex-1 space-y-0.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium leading-none">{member.name}</p>
+                      <p className="text-sm font-medium leading-tight">{member.name}</p>
                       {member.isBirthdayToday && (
-                        <Badge variant="default" className="bg-green-500 text-white text-xs px-1.5 py-0.5">
+                        <Badge variant="default" className="bg-green-500 text-white text-xs px-1.5 py-0.5 leading-none">
                           Today!
                         </Badge>
                       )}
                     </div>
                     {member.isBirthdayToday && (
                       <Link href={`/protected/members/feed?birthdayName=${encodeURIComponent(member.name)}`} passHref>
-                        <Button size="sm" variant="outline" className="text-xs h-7 px-2 py-1 border-green-600 text-green-600 hover:bg-green-50">
+                        <Button  variant="outline" className="text-xs h-6 px-1.5 py-0.5 border-green-600 text-green-600 hover:bg-green-50">
                           <PartyPopper className="h-3 w-3 mr-1" />
-                          Post Greeting
+                          Post
                         </Button>
                       </Link>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                     {formatDisplayBirthday(member.dob_day, member.dob_month)}
                   </p>
                 </div>
@@ -101,7 +101,7 @@ export default function UpcomingBirthdays({ birthdays }: Props) {
           </div>
         )}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="pt-3 pb-4">
         <Button variant="outline" className="w-full" asChild>
           <Link href="/protected/members">View All Members</Link>
         </Button>

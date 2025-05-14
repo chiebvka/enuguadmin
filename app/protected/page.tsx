@@ -29,19 +29,14 @@ export default async function ProtectedPage() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col  p-4 pt-0">
+      <div className="flex flex-1 flex-col px-2 py-4 pt-0 sm:p-4 sm:pt-0">
         <Quickactions />
-        <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6">
+        <div className="@container/main flex flex-1 flex-col gap-2 pt-4">
+            <div className="flex flex-col gap-4 md:gap-6">
               <SectionCards data={sectionCards} />
     
               {/* Combined grid for Chart, Events, and Birthdays */}
-              <div className="grid grid-cols-1 gap-6 px-6 md:grid-cols-3">
-                {/* DashboardChart can span 1 or more columns based on design preference */}
-                {/* For a simple 3-column layout, it takes 1 column. 
-                    If it needs more space, you can use md:col-span-2 for the chart
-                    and then adjust the other two or stack them.
-                    Assuming an equal 3-column split for now. */}
+              <div className="grid grid-cols-1 gap-4 px-0 sm:px-2 md:gap-6 md:grid-cols-3 lg:px-0">
                 <DashboardChart />
                 <Upcomingevents events={upcomingEventsList} />
                 <UpcomingBirthdays birthdays={upcomingBirthdaysList} />

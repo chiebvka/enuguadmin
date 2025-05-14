@@ -51,77 +51,77 @@ function TrendBadge({ value }: { value: number }) {
 
 export function SectionCards({ data }: SectionCardsProps) {
   return (
-    <div className="*:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 md:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card lg:px-6">
+    <div className="*:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 md:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-4 px-2 sm:px-4 lg:px-6 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card">
       <Card className="@container/card">
-        <CardHeader className="relative">
+        <CardHeader className="relative pb-2 pt-4">
           <CardDescription>Membership Requests</CardDescription>
-          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+          <CardTitle className="@[200px]/card:text-2xl @[250px]/card:text-3xl text-xl font-semibold tabular-nums">
             {data.totalMembers}
           </CardTitle>
           <div className="absolute right-4 top-4">
             <TrendBadge value={data.metrics.membershipChange} />
           </div>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1 text-sm">
+        <CardFooter className="flex-col items-start gap-1 text-sm pt-2 pb-4">
             <TrendText value={data.metrics.membershipChange} />
           <div className="line-clamp-1 flex gap-2 font-medium">
           </div>
-          <div className="text-muted-foreground">
+          <div className="text-muted-foreground text-xs sm:text-sm">
             Membership requests for the last 1 month
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
-        <CardHeader className="relative">
+        <CardHeader className="relative pb-2 pt-4">
           <CardDescription>Upcoming Events</CardDescription>
-          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+          <CardTitle className="@[200px]/card:text-2xl @[250px]/card:text-3xl text-xl font-semibold tabular-nums">
           {data.upcomingEvents}
           </CardTitle>
           <div className="absolute right-4 top-4">
             <TrendBadge value={data.metrics.eventChange} />
           </div>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1 text-sm">
+        <CardFooter className="flex-col items-start gap-1 text-sm pt-2 pb-4">
           <div className="line-clamp-1 flex gap-2 font-medium">
             <TrendText value={data.metrics.eventChange} />
           </div>
-          <div className="text-muted-foreground">
+          <div className="text-muted-foreground text-xs sm:text-sm">
             Number of Events in the next month
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
-        <CardHeader className="relative">
+        <CardHeader className="relative pb-2 pt-4">
           <CardDescription>Blog Posts</CardDescription>
-          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+          <CardTitle className="@[200px]/card:text-2xl @[250px]/card:text-3xl text-xl font-semibold tabular-nums">
             {data.blogPosts}
           </CardTitle>
           <div className="absolute right-4 top-4">
             <TrendBadge value={data.metrics.postChange} />
           </div>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1 text-sm">
+        <CardFooter className="flex-col items-start gap-1 text-sm pt-2 pb-4">
           <div className="line-clamp-1 flex gap-2 font-medium">
             <TrendText value={data.metrics.postChange} />
           </div>
-          <div className="text-muted-foreground">News Released in the past month</div>
+          <div className="text-muted-foreground text-xs sm:text-sm">News Released in the past month</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
-        <CardHeader className="relative">
+        <CardHeader className="relative pb-2 pt-4">
           <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+          <CardTitle className="@[200px]/card:text-2xl @[250px]/card:text-3xl text-xl font-semibold tabular-nums">
           {data.growthRate.toFixed(1)}%
           </CardTitle>
           <div className="absolute right-4 top-4">
             <TrendBadge value={data.growthRate} />
           </div>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1 text-sm">
+        <CardFooter className="flex-col items-start gap-1 text-sm pt-2 pb-4">
           <div className="line-clamp-1 flex gap-2 font-medium">
             <TrendText value={data.growthRate} />
           </div>
-          <div className="text-muted-foreground">Number of approved applications in the past month</div>
+          <div className="text-muted-foreground text-xs sm:text-sm">Number of approved applications in the past month</div>
         </CardFooter>
       </Card>
     </div>

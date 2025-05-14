@@ -21,12 +21,17 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarInput,
+  SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { TeamSwitcher } from "./team-switcher"
 import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
+import { Button } from "./ui/button"
+import Link from "next/link"
 
 // This is sample data.
 const data = {
@@ -166,6 +171,20 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         <NavProjects projects={data.projects} userEmail={userData.email} />
       </SidebarContent>
       <SidebarFooter>
+      <SidebarMenuButton className="text-sidebar-foreground/70 mt-8">
+              <Link href="https://bexoni.com" target="_blank">
+                  <span className="text-bexoni">
+                  Powered by Bexoni Labs</span>
+              </Link>
+        </SidebarMenuButton>
+        <div>
+        <Card className="border-2 border-bexoni">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="text-sm text-bexoni">Need to Create Invoices and Receipts?</CardTitle>
+              <CardDescription>Try out our new Invoice and Receipts platform <Link href="https://lancefortes.com/" target="_blank" className="text-bexoni">Lancefortes</Link></CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
         <NavUser user={userData} />
       </SidebarFooter>
       <SidebarRail />

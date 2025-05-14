@@ -15,6 +15,7 @@ import {
   MapPinned,
   FileText,
   Loader2,
+  Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -46,11 +47,21 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 import { Pagination } from "@/components/pagination"; // Import the reusable Pagination component
-import { getCachedEvents, invalidateEventsCache, CachedEvent } from '@/lib/eventDataCache'; // Import cache functions
+import { getCachedEvents, invalidateEventsCache, CachedEvent as OriginalCachedEvent } from '@/lib/eventDataCache'; // Import cache functions
 
-// Define event type - rename or ensure compatibility with CachedEvent
-// type Event = { ... } // Can be replaced by CachedEvent if identical
-// For this implementation, we'll use CachedEvent as the primary type for `events` state
+// Define the structure for participant counts
+type EventParticipantCounts = {
+  totalAttendees: number;
+  totalAdults: number;
+  totalKids: number;
+  totalMales: number;
+  totalFemales: number;
+};
+
+// Extend the OriginalCachedEvent type
+export type CachedEvent = OriginalCachedEvent & {
+  participantCounts?: EventParticipantCounts | null;
+};
 
 export default function RefinedEventsDashboard({ initialEvents = [] }: { initialEvents: CachedEvent[] }) {
   const [activeStep, setActiveStep] = useState(1)
@@ -673,6 +684,15 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
                                 {event.start_time} - {event.end_time}
                                 </span>
                             </div>
+                            {/* Participant Count for Upcoming Events */}
+                            {event.status === 'upcoming' && event.participantCounts && (
+                                <div className="flex items-center">
+                                    <Users className="mr-2 h-4 w-4 shrink-0" />
+                                    <span className="text-enugu">
+                                        {event.participantCounts.totalAttendees} Participant{event.participantCounts.totalAttendees !== 1 ? 's' : ''} registered
+                                    </span>
+                                </div>
+                            )}
                             <div className="flex items-center">
                                 <MapPin className="mr-2 h-4 w-4 shrink-0" />
                                 <span>{event.venue}</span>
@@ -892,6 +912,40 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
             <div className="p-4 overflow-y-auto">
               <h3 className="text-lg font-semibold mb-2">Summary</h3>
               <p className="text-sm text-muted-foreground mb-4">{selectedEvent?.summary}</p>
+
+              {/* Participant Counts Section in Drawer */}
+              {selectedEvent?.participantCounts && (selectedEvent.participantCounts.totalAttendees >= 0) && (
+                <>
+                  <Separator className="my-4" />
+                  <h3 className="text-lg font-semibold mb-3">Attendance</h3>
+                  <div className="space-y-2 text-sm mb-4">
+                    <div className="flex">
+                      <span className="text-muted-foreground mr-2">Total Registered:</span>
+                      <span className="font-medium">{selectedEvent.participantCounts.totalAttendees}</span>
+                    </div>
+                    <div className="pl-4 space-y-1 text-xs"> {/* Indented and smaller for breakdown */}
+                      <div className="flex">
+                        <span className="text-muted-foreground mr-2">Adults:</span>
+                        <span>{selectedEvent.participantCounts.totalAdults}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-muted-foreground mr-2">Kids:</span>
+                        <span>{selectedEvent.participantCounts.totalKids}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-muted-foreground mr-2">Males:</span>
+                        <span>{selectedEvent.participantCounts.totalMales}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-muted-foreground mr-2">Females:</span>
+                        <span>{selectedEvent.participantCounts.totalFemales}</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <Separator className="my-4" /> {/* Ensure separator is still there if no attendance or before details */}
               <h3 className="text-lg font-semibold mb-2">Details</h3>
               <div className="text-sm text-muted-foreground prose">{selectedEvent?.content}</div>
             </div>

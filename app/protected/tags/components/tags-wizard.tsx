@@ -251,7 +251,7 @@ export default function Tagswizard({ initialTags }: Props) {
 
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="md:container mx-auto py-6">
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
             {/* AlertDialogTrigger can wrap the button that opens the dialog,
                 but here we control it manually with state (showDeleteConfirm). */}

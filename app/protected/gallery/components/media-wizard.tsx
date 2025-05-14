@@ -89,7 +89,7 @@ export default function Mediawizard() {
   }
     
   return (
-    <div className="container mx-auto py-6">
+    <div className="md:container mx-auto py-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">Gallery</h1>
         <div className="flex gap-2">

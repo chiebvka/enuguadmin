@@ -476,7 +476,7 @@ Membership Team`);
 
     if (error) {
       return (
-        <div className="container mx-auto py-6 text-center text-red-500">
+        <div className="container mx-auto py-4 px-2 sm:px-6 text-center text-red-500">
           <p>{error}</p>
           <Button onClick={fetchMembersData} className="mt-4">Try Again</Button>
         </div>
@@ -484,72 +484,73 @@ Membership Team`);
     }
   
     return (
-      <div className="container mx-auto py-6">
-        <div className="flex justify-between items-center mb-6">
+      <div className="container mx-auto py-4 px-2 sm:px-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Membership Management</h1>
-            <p className="text-muted-foreground">Review and manage membership applications</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">Membership Management</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Review and manage membership applications</p>
           </div>
           <div>
-            <Button onClick={downloadApprovedMembersPDF} >
+            <Button onClick={downloadApprovedMembersPDF} size="sm" className="w-full sm:w-auto">
               <Download className="mr-2 h-4 w-4" />
-              Save Members Data
+              <span className="hidden sm:inline">Save Members Data</span>
+              <span className="sm:hidden">Save Data</span>
             </Button>
           </div>
         </div>
   
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card className="bg-white">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
-                <p className="text-sm text-muted-foreground">Total Applications</p>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-2xl font-bold">{totalApplications}</p>
-                  <User className="h-5 w-5 text-muted-foreground" />
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Applications</p>
+                <div className="flex items-center justify-between mt-1 sm:mt-2">
+                  <p className="text-xl sm:text-2xl font-bold">{totalApplications}</p>
+                  <User className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                 </div>
               </div>
             </CardContent>
           </Card>
   
           <Card className="bg-white">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
-                <p className="text-sm text-muted-foreground">Approved Members</p>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-2xl font-bold">{approvedMemberCount}</p>
-                  <UserCheck className="h-5 w-5 text-green-500" />
+                <p className="text-xs sm:text-sm text-muted-foreground">Approved Members</p>
+                <div className="flex items-center justify-between mt-1 sm:mt-2">
+                  <p className="text-xl sm:text-2xl font-bold">{approvedMemberCount}</p>
+                  <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
   
           <Card className="bg-white">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
-                <p className="text-sm text-muted-foreground">Declined Requests</p>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-2xl font-bold">{declinedRequestCount}</p>
-                  <UserX className="h-5 w-5 text-red-500" />
+                <p className="text-xs sm:text-sm text-muted-foreground">Declined Requests</p>
+                <div className="flex items-center justify-between mt-1 sm:mt-2">
+                  <p className="text-xl sm:text-2xl font-bold">{declinedRequestCount}</p>
+                  <UserX className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-white">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
-                <p className="text-sm text-muted-foreground">Blocked Members</p>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-2xl font-bold">{blockedMemberCount}</p>
-                  <ShieldAlert className="h-5 w-5 text-orange-500" />
+                <p className="text-xs sm:text-sm text-muted-foreground">Blocked Members</p>
+                <div className="flex items-center justify-between mt-1 sm:mt-2">
+                  <p className="text-xl sm:text-2xl font-bold">{blockedMemberCount}</p>
+                  <ShieldAlert className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
   
-        {/* Membership Chart - Replaced */}
+        {/* Membership Chart */}
         {apiChartData.length > 0 ? (
           <div className="mb-6">
             <MembershipStatsChart 
@@ -561,48 +562,48 @@ Membership Team`);
           </div>
         ) : loading ? (
           <Card className="bg-white mb-6">
-            <CardHeader>
-              <CardTitle>Membership Applications</CardTitle>
-              <CardDescription>Loading chart data...</CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Membership Applications</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Loading chart data...</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center">
+            <CardContent className="h-[200px] sm:h-[300px] flex items-center justify-center">
               <p>Loading...</p>
             </CardContent>
           </Card>
         ) : (
            <Card className="bg-white mb-6">
-            <CardHeader>
-              <CardTitle>Membership Applications</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Membership Applications</CardTitle>
             </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center">
+            <CardContent className="h-[200px] sm:h-[300px] flex items-center justify-center">
               <p>No chart data available.</p>
             </CardContent>
           </Card>
         )}
   
         {/* Filter Bar */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2">
-            <Button variant={activeView === "approved" ? "default" : "outline"} onClick={() => setActiveView("approved")}>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant={activeView === "approved" ? "default" : "outline"} onClick={() => setActiveView("approved")}>
               Approved
             </Button>
-            <Button variant={activeView === "pending" ? "default" : "outline"} onClick={() => setActiveView("pending")}>
+            <Button size="sm" variant={activeView === "pending" ? "default" : "outline"} onClick={() => setActiveView("pending")}>
               Pending
             </Button>
-            <Button variant={activeView === "declined" ? "default" : "outline"} onClick={() => setActiveView("declined")}>
+            <Button size="sm" variant={activeView === "declined" ? "default" : "outline"} onClick={() => setActiveView("declined")}>
               Declined
             </Button>
-            <Button variant={activeView === "blocked" ? "default" : "outline"} onClick={() => setActiveView("blocked")}>
+            <Button size="sm" variant={activeView === "blocked" ? "default" : "outline"} onClick={() => setActiveView("blocked")}>
               Blocked
             </Button>
           </div>
-          <div className="flex gap-3">
-            <div className="relative">
+          <div className="flex gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search by name, email, or membership no..."
-                className="pl-8 w-80"
+                placeholder="Search..."
+                className="pl-8 w-full sm:w-80"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -616,7 +617,7 @@ Membership Team`);
             paginatedMembers.map((item: Member) => (
               <Card
                 key={item.id}
-                className={`bg-white overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-md ${
+                className={`bg-white overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer ${
                   activeView === 'approved' ? 'hover:bg-green-50' : 
                   activeView === 'pending' ? 'hover:bg-yellow-50' :
                   activeView === 'declined' ? 'hover:bg-red-50' :
@@ -624,33 +625,33 @@ Membership Team`);
                 }`}
                 onClick={() => toggleExpand(item.id)}
               >
-                <div className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-start gap-4">
-                      <Avatar className="mt-1">
+                <div className="p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-3 sm:gap-0">
+                    <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                      <Avatar className="mt-1 h-10 w-10 sm:h-12 sm:w-12">
                         <AvatarImage src={"/placeholder.svg"} alt={getDisplayName(item)} />
                         <AvatarFallback>
                           {getAvatarFallback(item)}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium">{getDisplayName(item)}</h3>
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <h3 className="font-medium text-sm sm:text-base">{getDisplayName(item)}</h3>
                           {activeView === "approved" && item.member_no && (
-                            <Badge variant="outline" className="bg-green-50">
+                            <Badge variant="outline" className="bg-green-50 text-xs px-1.5 py-0.5 self-start sm:self-center">
                               {item.member_no}
                             </Badge>
                           )}
                           {activeView === "blocked" && item.member_no && (
-                            <Badge variant="destructive" className="bg-orange-100 text-orange-700">
+                            <Badge variant="destructive" className="bg-orange-100 text-orange-700 text-xs px-1.5 py-0.5 self-start sm:self-center">
                               {item.member_no} - BLOCKED
                             </Badge>
                           )}
                         </div>
-                        <p className={`text-sm text-muted-foreground ${!expandedItems[String(item.id)] ? 'line-clamp-1' : ''}`}>
+                        <p className={`text-xs sm:text-sm text-muted-foreground ${!expandedItems[String(item.id)] ? 'line-clamp-2 sm:line-clamp-1' : ''}`}>
                           {item.bio || 'No bio available.'}
                         </p>
-                        <div className="flex items-center gap-4 mt-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-1">
                           <div className="flex items-center gap-1">
                             <Mail className="h-3 w-3 text-muted-foreground" />
                             <span className="text-xs">{item.email || 'N/A'}</span>
@@ -662,25 +663,25 @@ Membership Team`);
                             </div>
                           )}
                         </div>
-                        <div className="mt-1 space-y-0.5">
+                        <div className="mt-1 space-y-0.5 text-xs">
                           {activeView === "pending" && item.created_at && (
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-xs">Submitted: {formatDate(item.created_at)}</span>
+                              <span>Submitted: {formatDate(item.created_at)}</span>
                             </div>
                           )}
-                          {activeView === "approved" && (
+                           {activeView === "approved" && (
                             <>
                               {item.created_at && (
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3 text-muted-foreground" />
-                                  <span className="text-xs text-gray-600 dark:text-gray-400">Requested: {formatDate(item.created_at)}</span>
+                                  <span className="text-gray-600 dark:text-gray-400">Requested: {formatDate(item.created_at)}</span>
                                 </div>
                               )}
                               {item.approved_on && (
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3 text-muted-foreground" />
-                                  <span className="text-xs">Approved: {formatDate(item.approved_on)}</span>
+                                  <span>Approved: {formatDate(item.approved_on)}</span>
                                 </div>
                               )}
                             </>
@@ -688,54 +689,45 @@ Membership Team`);
                           {activeView === "declined" && item.denied_on && (
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-xs">Declined: {formatDate(item.denied_on)}</span>
+                              <span>Declined: {formatDate(item.denied_on)}</span>
                             </div>
                           )}
                           {activeView === "blocked" && item.blocked_on && (
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-xs text-orange-600">Blocked: {formatDate(item.blocked_on)}</span>
+                              <span className="text-orange-600">Blocked: {formatDate(item.blocked_on)}</span>
                             </div>
                           )}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 self-start sm:self-center mt-2 sm:mt-0">
                       {activeView === "pending" && (
                         <>
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleApprove(item)
-                            }}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50 px-2 py-1 h-auto"
+                            onClick={(e) => { e.stopPropagation(); handleApprove(item); }}
                           >
-                            <Check className="h-4 w-4 mr-1" /> Approve
+                            <Check className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Approve</span>
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleDeclineClick(item)
-                            }}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-1 h-auto"
+                            onClick={(e) => { e.stopPropagation(); handleDeclineClick(item); }}
                           >
-                            <X className="h-4 w-4 mr-1" /> Decline
+                            <X className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Decline</span>
                           </Button>
                         </>
                       )}
                       {activeView === "approved" && (
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
-                          className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 p-1.5"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleBlockClick(item);
-                          }}
+                          className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 p-1.5 h-7 w-7 sm:h-8 sm:w-8"
+                          onClick={(e) => { e.stopPropagation(); handleBlockClick(item); }}
                           title="Block Member"
                         >
                           <ShieldAlert className="h-4 w-4" />
@@ -743,31 +735,33 @@ Membership Team`);
                       )}
                       {activeView === "blocked" && (
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
-                          className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1.5"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUnblockClick(item);
-                          }}
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50 p-1.5 h-7 w-7 sm:h-8 sm:w-8"
+                          onClick={(e) => { e.stopPropagation(); handleUnblockClick(item); }}
                           title="Unblock Member"
                         >
                           <ShieldCheck className="h-4 w-4" />
                         </Button>
                       )}
-                      <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                      <Button 
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                          onClick={(e) => { e.stopPropagation(); toggleExpand(item.id);}}
+                      >
                         {expandedItems[String(item.id)] ? (
                           <ChevronUp className="h-4 w-4 text-muted-foreground" />
                         ) : (
                           <ChevronDown className="h-4 w-4 text-muted-foreground" />
                         )}
-                      </div>
+                      </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
                             variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
+                            size="icon"
+                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <MoreHorizontal className="h-4 w-4" />
@@ -785,11 +779,7 @@ Membership Team`);
                           )}
                           {activeView === "approved" && (
                             <>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  window.location.href = `mailto:${item.email}`
-                                }}
-                              >
+                              <DropdownMenuItem onClick={() => { window.location.href = `mailto:${item.email}` }}>
                                 Contact Member
                               </DropdownMenuItem>
                               <DropdownMenuItem 
@@ -812,14 +802,14 @@ Membership Team`);
                       </DropdownMenu>
                     </div>
                   </div>
-    
+        
                   {expandedItems[String(item.id)] && (
                     <div className="mt-4 pt-4 border-t">
-                      <div className="grid grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <div className="space-y-4">
                           <div>
                             <h4 className="text-sm font-medium mb-2">Personal Information</h4>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 gap-2 sm:gap-3">
                               {(item.dob_day && item.dob_month) && (
                                 <div className="flex items-start gap-2">
                                   <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
@@ -840,7 +830,7 @@ Membership Team`);
                               )}
                             </div>
                           </div>
-    
+        
                           {item.address && (
                             <div>
                               <h4 className="text-sm font-medium mb-2">Address</h4>
@@ -851,7 +841,7 @@ Membership Team`);
                             </div>
                           )}
                         </div>
-    
+        
                         <div className="space-y-4">
                           {activeView === "pending" && item.bio && (
                             <div>
@@ -859,7 +849,7 @@ Membership Team`);
                               <p className="text-sm text-muted-foreground">{item.bio}</p>
                             </div>
                           )}
-    
+        
                           {activeView === "declined" && item.denial_reason && (
                             <div>
                               <h4 className="text-sm font-medium mb-2">Decline Reason</h4>
@@ -875,10 +865,10 @@ Membership Team`);
             ))
           ) : (
             <Card>
-              <CardContent className="p-12 flex flex-col items-center justify-center">
-                <User className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium">No records found</p>
-                <p className="text-muted-foreground">
+              <CardContent className="p-6 sm:p-12 flex flex-col items-center justify-center">
+                <User className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-3 sm:mb-4" />
+                <p className="text-base sm:text-lg font-medium">No records found</p>
+                <p className="text-xs sm:text-sm text-muted-foreground text-center">
                   {searchQuery ? "No records match your search." :
                     activeView === "pending"
                     ? "There are no pending membership requests."
@@ -895,8 +885,8 @@ Membership Team`);
   
         {/* Pagination Controls */}
         {filteredItems.length > 0 && totalPages > 0 && (
-           <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/50">
-              <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
+           <div className="mt-6 mb-8 rounded-lg shadow-sm p-3 sm:p-4 border flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/50">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-green-700 dark:text-green-400">
                 <span>
                     Displaying {((currentPage - 1) * pageSize) + 1}-
                     {Math.min(currentPage * pageSize, filteredItems.length)} of {filteredItems.length}
@@ -914,26 +904,26 @@ Membership Team`);
   
         {/* Details Dialog */}
         <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-w-3xl w-[95vw] sm:w-full rounded-lg">
             <DialogHeader>
-              <DialogTitle>Membership Details</DialogTitle>
+              <DialogTitle className="text-lg sm:text-xl">Membership Details</DialogTitle>
             </DialogHeader>
   
             {selectedRequest && (
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 py-4 max-h-[80vh] overflow-y-auto">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-16 w-16">
+                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                       <AvatarImage src={"/placeholder.svg"} alt={getDisplayName(selectedRequest)} />
-                      <AvatarFallback className="text-lg">
+                      <AvatarFallback className="text-base sm:text-lg">
                         {getAvatarFallback(selectedRequest)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h2 className="text-xl font-bold">{getDisplayName(selectedRequest)}</h2>
-                      <p className="text-muted-foreground">{selectedRequest.bio || "N/A"}</p>
+                      <h2 className="text-lg sm:text-xl font-bold">{getDisplayName(selectedRequest)}</h2>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{selectedRequest.bio || "N/A"}</p>
                       {selectedRequest.status === "approved" && selectedRequest.member_no && (
-                        <Badge variant="outline" className="mt-1 bg-green-50">
+                        <Badge variant="outline" className="mt-1 bg-green-50 text-xs px-1.5 py-0.5">
                           {selectedRequest.member_no}
                         </Badge>
                       )}
@@ -942,16 +932,16 @@ Membership Team`);
   
                   <Separator />
   
-                  <div className="space-y-3">
-                    <h3 className="font-medium">Personal Information</h3>
+                  <div className="space-y-2 sm:space-y-3">
+                    <h3 className="font-medium text-sm sm:text-base">Personal Information</h3>
   
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 gap-2 sm:gap-3">
                       {(selectedRequest.dob_day && selectedRequest.dob_month) && (
                         <div className="flex items-start gap-2">
                           <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
                           <div>
                             <Label className="text-xs text-muted-foreground">Birthday</Label>
-                            <p>{formatBirthday(selectedRequest.dob_day, selectedRequest.dob_month)}</p>
+                            <p className="text-sm">{formatBirthday(selectedRequest.dob_day, selectedRequest.dob_month)}</p>
                           </div>
                         </div>
                       )}
@@ -967,14 +957,14 @@ Membership Team`);
                     </div>
                   </div>
   
-                  <div className="space-y-3">
-                    <h3 className="font-medium">Contact Information</h3>
+                  <div className="space-y-2 sm:space-y-3">
+                    <h3 className="font-medium text-sm sm:text-base">Contact Information</h3>
   
                     <div className="flex items-start gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
                       <div>
                         <Label className="text-xs text-muted-foreground">Email</Label>
-                        <p>{selectedRequest.email || "N/A"}</p>
+                        <p className="text-sm break-all">{selectedRequest.email || "N/A"}</p>
                       </div>
                     </div>
   
@@ -983,7 +973,7 @@ Membership Team`);
                         <Phone className="h-4 w-4 text-muted-foreground mt-0.5" />
                         <div>
                           <Label className="text-xs text-muted-foreground">Mobile</Label>
-                          <p>{selectedRequest.mobile}</p>
+                          <p className="text-sm">{selectedRequest.mobile}</p>
                         </div>
                       </div>
                     )}
@@ -993,45 +983,45 @@ Membership Team`);
                         <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                         <div>
                           <Label className="text-xs text-muted-foreground">Address</Label>
-                          <p>{selectedRequest.address}</p>
+                          <p className="text-sm">{selectedRequest.address}</p>
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
   
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {selectedRequest.status !== 'approved' && selectedRequest.status !== 'declined' && selectedRequest.status !== 'blocked' && selectedRequest.bio && (
                     <div>
-                      <h3 className="font-medium mb-2">About</h3>
-                      <p className="text-muted-foreground">{selectedRequest.bio}</p>
+                      <h3 className="font-medium text-sm sm:text-base mb-1 sm:mb-2">About</h3>
+                      <p className="text-sm text-muted-foreground">{selectedRequest.bio}</p>
                     </div>
                   )}
   
                   <Separator />
   
                   <div>
-                    <h3 className="font-medium mb-2">Application Details</h3>
+                    <h3 className="font-medium text-sm sm:text-base mb-1 sm:mb-2">Application Details</h3>
                     {selectedRequest.status !== 'approved' && selectedRequest.status !== 'declined' && selectedRequest.status !== 'blocked' && selectedRequest.created_at && (
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between text-sm">
                         <div>
                           <Label className="text-xs text-muted-foreground">Submission Date</Label>
                           <p>{formatDate(selectedRequest.created_at)}</p>
                         </div>
-                        <Badge>Pending Review</Badge>
+                        <Badge className="text-xs px-1.5 py-0.5">Pending Review</Badge>
                       </div>
                     )}
   
                     {selectedRequest.status === "approved" && (
                       <>
                         {selectedRequest.created_at && (
-                          <div className="mb-2">
+                          <div className="mb-2 text-sm">
                             <Label className="text-xs text-muted-foreground">Requested Date</Label>
                             <p>{formatDate(selectedRequest.created_at)}</p>
                           </div>
                         )}
                         {selectedRequest.approved_on && (
-                          <div>
+                          <div className="text-sm">
                             <Label className="text-xs text-muted-foreground">Approved Date</Label>
                             <p>{formatDate(selectedRequest.approved_on)}</p>
                           </div>
@@ -1040,7 +1030,7 @@ Membership Team`);
                     )}
   
                     {selectedRequest.status === "declined" && (
-                      <div>
+                      <div className="text-sm">
                         <div className="mb-2">
                           <Label className="text-xs text-muted-foreground">Declined Date</Label>
                           <p>{formatDate(selectedRequest.denied_on)}</p>
@@ -1053,32 +1043,30 @@ Membership Team`);
                     )}
 
                     {selectedRequest.status === "blocked" && (
-                      <div>
+                      <div className="text-sm">
                         <div className="mb-2">
                           <Label className="text-xs text-muted-foreground">Blocked Date</Label>
                           <p className="text-orange-600">{formatDate(selectedRequest.blocked_on)}</p>
                         </div>
-                        <Badge variant="destructive" className="bg-orange-100 text-orange-700">Blocked</Badge>
+                        <Badge variant="destructive" className="bg-orange-100 text-orange-700 text-xs px-1.5 py-0.5">Blocked</Badge>
                       </div>
                     )}
                   </div>
   
                   {selectedRequest.status !== 'approved' && selectedRequest.status !== 'declined' && selectedRequest.status !== 'blocked' && (
-                    <div className="pt-4 flex justify-end gap-3">
+                    <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
                       <Button
-                        onClick={() => {
-                          handleApprove(selectedRequest)
-                        }}
-                        className="bg-green-600 hover:bg-green-700"
+                        size="sm"
+                        onClick={() => { handleApprove(selectedRequest); }}
+                        className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
                       >
                         <Check className="h-4 w-4 mr-2" /> Approve
                       </Button>
                       <Button
+                        size="sm"
                         variant="outline"
-                        onClick={() => {
-                          handleDeclineClick(selectedRequest)
-                        }}
-                        className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                        onClick={() => { handleDeclineClick(selectedRequest); }}
+                        className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 w-full sm:w-auto"
                       >
                         <X className="h-4 w-4 mr-2" /> Decline
                       </Button>
@@ -1092,10 +1080,10 @@ Membership Team`);
   
         {/* Decline Dialog */}
         <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
-          <DialogContent>
+          <DialogContent className="w-[95vw] sm:w-full rounded-lg">
             <DialogHeader>
-              <DialogTitle>Decline Membership Request</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-lg sm:text-xl">Decline Membership Request</DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm">
                 Please provide a reason for declining {getDisplayName(selectedRequest)}'s membership request. This reason will be
                 included in the notification email sent to the applicant.
               </DialogDescription>
@@ -1104,13 +1092,13 @@ Membership Team`);
               placeholder="Enter reason for declining..."
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
-              className="min-h-[100px]"
+              className="min-h-[100px] text-sm"
             />
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setDeclineDialogOpen(false)}>
+            <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+              <Button size="sm" variant="outline" onClick={() => setDeclineDialogOpen(false)} className="w-full sm:w-auto">
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={handleDeclineSubmit} disabled={!declineReason.trim()}>
+              <Button size="sm" variant="destructive" onClick={handleDeclineSubmit} disabled={!declineReason.trim()} className="w-full sm:w-auto">
                 Send Email
               </Button>
             </DialogFooter>
@@ -1119,21 +1107,26 @@ Membership Team`);
 
         {/* Block Member Confirmation Dialog */}
         <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
-          <AlertDialogContent>
+          <AlertDialogContent className="w-[95vw] sm:w-full rounded-lg">
             <AlertDialogHeader>
-              <AlertDialogTitle>Block Member?</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-lg sm:text-xl">Block Member?</AlertDialogTitle>
+              <AlertDialogDescription className="text-xs sm:text-sm">
                 Are you sure you want to block {getDisplayName(selectedRequest)}? 
                 Their access and status will be updated accordingly. This action can be undone later.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setBlockDialogOpen(false)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={handleConfirmBlock}
-                className="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
-              >
-                Yes, Block Member
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+              <AlertDialogCancel asChild>
+                  <Button size="sm" variant="outline" className="w-full sm:w-auto">Cancel</Button>
+              </AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <Button 
+                  size="sm"
+                  onClick={handleConfirmBlock}
+                  className="bg-orange-600 hover:bg-orange-700 focus:ring-orange-500 w-full sm:w-auto"
+                >
+                  Yes, Block Member
+                </Button>
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -1141,21 +1134,26 @@ Membership Team`);
 
         {/* Unblock Member Confirmation Dialog */}
         <AlertDialog open={unblockDialogOpen} onOpenChange={setUnblockDialogOpen}>
-          <AlertDialogContent>
+          <AlertDialogContent className="w-[95vw] sm:w-full rounded-lg">
             <AlertDialogHeader>
-              <AlertDialogTitle>Unblock Member?</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="text-lg sm:text-xl">Unblock Member?</AlertDialogTitle>
+              <AlertDialogDescription className="text-xs sm:text-sm">
                 Are you sure you want to unblock {getDisplayName(selectedRequest)}? 
                 Their status will be set to "approved".
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setUnblockDialogOpen(false)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={handleConfirmUnblock}
-                className="bg-green-600 hover:bg-green-700 focus:ring-green-500"
-              >
-                Yes, Unblock Member
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+               <AlertDialogCancel asChild>
+                  <Button size="sm" variant="outline" className="w-full sm:w-auto">Cancel</Button>
+              </AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <Button 
+                  size="sm"
+                  onClick={handleConfirmUnblock}
+                  className="bg-green-600 hover:bg-green-700 focus:ring-green-500 w-full sm:w-auto"
+                >
+                  Yes, Unblock Member
+                </Button>
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

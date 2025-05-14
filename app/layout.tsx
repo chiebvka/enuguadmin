@@ -63,10 +63,10 @@ export default function RootLayout({
                     <a
                       href="https://www.bexoni.com/"
                       target="_blank"
-                      className="font-bold hover:underline"
+                      className="font-bold text-bexoni hover:underline"
                       rel="noreferrer"
                     >
-                      bexoni Labs
+                      Bexoni Labs
                     </a>
                   </p>
                   <ThemeSwitcher />

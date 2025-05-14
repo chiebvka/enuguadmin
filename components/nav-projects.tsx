@@ -108,12 +108,7 @@ export function NavProjects({
           );
         })}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70 mt-8">
-              <Link href="https://bexoni.com" target="_blank">
-                  <span className="text-bexoni">
-                  Powered by Bexoni</span>
-              </Link>
-          </SidebarMenuButton>
+     
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>

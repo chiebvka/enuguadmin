@@ -53,7 +53,7 @@ export default function DashboardChart() {
           <CardTitle>Membership Applications</CardTitle>
           <CardDescription>Last 6 Months</CardDescription>
         </CardHeader>
-        <CardContent className="h-[300px] flex items-center justify-center">
+        <CardContent className="h-[250px] sm:h-[300px] flex items-center justify-center">
           <p>Loading chart data...</p>
         </CardContent>
       </Card>
@@ -67,7 +67,7 @@ export default function DashboardChart() {
           <CardTitle>Membership Applications</CardTitle>
           <CardDescription>Error</CardDescription>
         </CardHeader>
-        <CardContent className="h-[300px] flex items-center justify-center text-red-500">
+        <CardContent className="h-[250px] sm:h-[300px] flex items-center justify-center text-red-500">
           <p>Error loading chart: {error}</p>
         </CardContent>
       </Card>
@@ -81,7 +81,7 @@ export default function DashboardChart() {
           <CardTitle>Membership Applications</CardTitle>
           <CardDescription>Last 6 Months</CardDescription>
         </CardHeader>
-        <CardContent className="h-[300px] flex items-center justify-center">
+        <CardContent className="h-[250px] sm:h-[300px] flex items-center justify-center">
           <p>No data available to display the chart.</p>
         </CardContent>
       </Card>

@@ -116,10 +116,10 @@ export default function Blogwizard() {
   }
     
   return (
-    <div className="container mx-auto py-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">Blog Posts</h1>
-        <Button className="bg-green-600 hover:bg-green-700" asChild>
+    <div className="md:container mx-auto py-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 px-1 sm:px-0">
+        <h1 className="text-xl sm:text-2xl font-bold">Blog Posts</h1>
+        <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto" asChild>
             <Link href="/protected/blogs/create">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 New Blog Post
@@ -127,12 +127,12 @@ export default function Blogwizard() {
         </Button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 px-1 sm:px-0">
         <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
             placeholder="Search blogs by title, tags..."
-            className="pl-8 border-green-200 focus-visible:ring-green-500"
+            className="pl-8 border-green-200 focus-visible:ring-green-500 text-sm sm:text-base"
             value={searchQuery}
             onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -155,11 +155,11 @@ export default function Blogwizard() {
                 className={`overflow-hidden transition-all ${expandedBlogIds[blog.id] ? "ring-2 ring-green-200" : ""}`}
                 >
                 <div
-                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/20"
+                    className="flex items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-muted/20"
                     onClick={() => toggleExpand(blog.id)}
                 >
-                    <div className="flex items-center gap-4 flex-grow min-w-0">
-                    <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+                    <div className="flex items-center gap-3 sm:gap-4 flex-grow min-w-0">
+                    <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-md overflow-hidden flex-shrink-0">
                         <Image
                         src={blog.cover_image || "/placeholder.svg"}
                         alt={blog.title}
@@ -168,19 +168,19 @@ export default function Blogwizard() {
                         />
                     </div>
                     <div className="flex-grow min-w-0">
-                        <h3 className="font-medium truncate">{blog.title}</h3>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <h3 className="font-medium truncate text-sm sm:text-base">{blog.title}</h3>
+                        <div className="flex flex-col xs:flex-row xs:items-center gap-x-3 gap-y-0.5 text-xs sm:text-sm text-muted-foreground mt-0.5">
                         <div className="flex items-center">
                             <Calendar className="mr-1 h-3 w-3" />
                             {formatDate(blog.created_at)}
                         </div>
                         {blog.status === 'draft' ? (
-                            <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300 py-0.5 px-1.5">
+                            <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300 py-0.5 px-1.5 text-xs">
                                 <span className="mr-1.5 h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
                                 Draft
                             </Badge>
                             ) : (
-                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 py-0.5 px-1.5">
+                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 py-0.5 px-1.5 text-xs">
                                 <span className="mr-1.5 h-2 w-2 rounded-full bg-green-500"></span>
                                 Published
                             </Badge>
@@ -188,27 +188,27 @@ export default function Blogwizard() {
                         </div>
                     </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
                     <div className="hidden sm:flex flex-wrap gap-1 items-center">
                         {blog.tags
                         .slice(0, 2)
                         .map((tag) => (
-                            <Badge key={tag.id} variant="secondary" className="bg-green-100 text-green-800">
+                            <Badge key={tag.id} variant="secondary" className="bg-green-100 text-green-800 text-xs">
                             {tag.name}
                             </Badge>
                         ))}
-                        {blog.tags.length > 2 && <Badge variant="outline">+{blog.tags.length - 2}</Badge>}
+                        {blog.tags.length > 2 && <Badge variant="outline" className="text-xs">+{blog.tags.length - 2}</Badge>}
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="text-muted-foreground hover:text-red-600 h-8 w-8"
+                        className="text-muted-foreground hover:text-red-600 h-7 w-7 sm:h-8 sm:w-8"
                         onClick={(e) => { e.stopPropagation(); handleOpenDeleteDialog(blog); }}
                         title="Delete Post"
                     >
                         <Trash2 className="h-4 w-4 text-red-600" />
                     </Button>
-                    <div onClick={(e) => e.stopPropagation()} className="h-8 w-8 flex items-center justify-center">
+                    <div onClick={(e) => e.stopPropagation()} className="h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center">
                         <BlogActionsMenu blogId={blog.id} />
                     </div>
                     <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${expandedBlogIds[blog.id] ? "rotate-180" : ""}`} />
@@ -216,20 +216,22 @@ export default function Blogwizard() {
                 </div>
 
                 {!expandedBlogIds[blog.id] && (
-                    <div className="px-4 pb-4 pt-0 ml-16">
-                    <p className="text-sm text-muted-foreground line-clamp-2">{blog.excerpt}</p>
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-0">
+                    <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:ml-[calc(theme(spacing.12)_+_theme(spacing.4))]">
+                        {blog.excerpt}
+                    </p>
                     </div>
                 )}
 
                 {expandedBlogIds[blog.id] && (
-                    <CardContent className="border-t p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <CardContent className="border-t p-3 sm:p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                         <div className="md:col-span-2">
-                        <h4 className="font-medium mb-2">Excerpt</h4>
-                        <p className="text-sm text-muted-foreground">{blog.excerpt}</p>
+                        <h4 className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">Excerpt</h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{blog.excerpt}</p>
 
-                        <div className="mt-4">
-                            <h4 className="font-medium mb-2">Tags</h4>
+                        <div className="mt-3 sm:mt-4">
+                            <h4 className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">Tags</h4>
                             <div className="flex flex-wrap gap-2">
                             {blog.tags.map((tag) => (
                                 <Badge key={tag.id} variant="secondary" className="bg-green-100 text-green-800">
@@ -242,7 +244,7 @@ export default function Blogwizard() {
                         </div>
 
                         <div>
-                        <h4 className="font-medium mb-2">Preview</h4>
+                        <h4 className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">Preview</h4>
                         <div className="relative aspect-video rounded-md overflow-hidden">
                             <Image
                             src={blog.cover_image || "/placeholder.svg"}
@@ -252,23 +254,23 @@ export default function Blogwizard() {
                             />
                         </div>
 
-                        <div className="mt-4 space-y-2">
+                        <div className="mt-3 sm:mt-4 space-y-1 sm:space-y-2">
                             <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">Published</span>
-                            <span className="text-sm font-medium">{formatDate(blog.created_at)}</span>
+                            <span className="text-xs sm:text-sm text-muted-foreground">Published</span>
+                            <span className="text-xs sm:text-sm font-medium">{formatDate(blog.created_at)}</span>
                             </div>
                             <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">Status</span>
+                            <span className="text-xs sm:text-sm text-muted-foreground">Status</span>
                             {blog.status === 'draft' ? (
-                                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">Draft</Badge>
+                                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300 text-xs">Draft</Badge>
                                 ) : (
-                                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Published</Badge>
+                                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 text-xs">Published</Badge>
                             )}
                             </div>
                         </div>
 
-                        <div className="mt-4">
-                            <Button asChild className="w-full bg-green-600 hover:bg-green-700">
+                        <div className="mt-3 sm:mt-4">
+                            <Button asChild className="w-full bg-green-600 hover:bg-green-700 text-xs sm:text-sm">
                                 <Link href={`/protected/blogs/${blog.id}`}>Edit Post</Link>
                             </Button>
                         </div>
@@ -282,8 +284,8 @@ export default function Blogwizard() {
 
             {/* Styled Pagination Container - To match Events page */}
             {paginatedBlogs.length > 0 && (
-              <div className="mt-6 mb-8 rounded-lg shadow-sm p-4 border flex flex-col sm:flex-row justify-between items-center gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/50">
-                <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
+              <div className="mt-6 mb-8 rounded-lg shadow-sm p-3 sm:p-4 border flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/50">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-green-700 dark:text-green-400">
                   <span>
                       Displaying {((currentPage - 1) * pageSize) + 1}-
                       {Math.min(currentPage * pageSize, totalFilteredBlogs)} of {totalFilteredBlogs}
