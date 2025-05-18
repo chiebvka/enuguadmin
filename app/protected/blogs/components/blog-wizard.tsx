@@ -175,12 +175,12 @@ export default function Blogwizard() {
                             {formatDate(blog.created_at)}
                         </div>
                         {blog.status === 'draft' ? (
-                            <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300 py-0.5 px-1.5 text-xs">
+                            <Badge variant="outline" className="bg-yellow-100 text-yellow-800 md:w-16 border-yellow-300 py-0.5 px-1.5 text-xs">
                                 <span className="mr-1.5 h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
                                 Draft
                             </Badge>
                             ) : (
-                            <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 py-0.5 px-1.5 text-xs">
+                            <Badge variant="outline" className="bg-green-100 text-green-800 md:w-20 border-green-300 py-0.5 px-1.5 text-xs">
                                 <span className="mr-1.5 h-2 w-2 rounded-full bg-green-500"></span>
                                 Published
                             </Badge>

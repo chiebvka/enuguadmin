@@ -685,11 +685,11 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
                                 </span>
                             </div>
                             {/* Participant Count for Upcoming Events */}
-                            {event.status === 'upcoming' && event.participantCounts && (
+                            {event.status === 'upcoming' && (
                                 <div className="flex items-center">
                                     <Users className="mr-2 h-4 w-4 shrink-0" />
-                                    <span className="text-enugu">
-                                        {event.participantCounts.totalAttendees} Participant{event.participantCounts.totalAttendees !== 1 ? 's' : ''} registered
+                                    <span>
+                                        <span className="text-enugu font-medium">{event.participantCounts?.totalAttendees ?? 0}</span> Participant{event.participantCounts?.totalAttendees !== 1 ? 's' : ''} registered
                                     </span>
                                 </div>
                             )}
@@ -914,30 +914,30 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
               <p className="text-sm text-muted-foreground mb-4">{selectedEvent?.summary}</p>
 
               {/* Participant Counts Section in Drawer */}
-              {selectedEvent?.participantCounts && (selectedEvent.participantCounts.totalAttendees >= 0) && (
+              {selectedEvent?.participantCounts && selectedEvent.participantCounts.totalAttendees > 0 && (
                 <>
                   <Separator className="my-4" />
                   <h3 className="text-lg font-semibold mb-3">Attendance</h3>
                   <div className="space-y-2 text-sm mb-4">
-                    <div className="flex">
-                      <span className="text-muted-foreground mr-2">Total Registered:</span>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Total Registered:</span>
                       <span className="font-medium">{selectedEvent.participantCounts.totalAttendees}</span>
                     </div>
                     <div className="pl-4 space-y-1 text-xs"> {/* Indented and smaller for breakdown */}
                       <div className="flex">
-                        <span className="text-muted-foreground mr-2">Adults:</span>
+                        <span className="text-muted-foreground mr-1">Adults:</span>
                         <span>{selectedEvent.participantCounts.totalAdults}</span>
                       </div>
                       <div className="flex">
-                        <span className="text-muted-foreground mr-2">Kids:</span>
+                        <span className="text-muted-foreground mr-1">Kids:</span>
                         <span>{selectedEvent.participantCounts.totalKids}</span>
                       </div>
                       <div className="flex">
-                        <span className="text-muted-foreground mr-2">Males:</span>
+                        <span className="text-muted-foreground mr-1">Males:</span>
                         <span>{selectedEvent.participantCounts.totalMales}</span>
                       </div>
                       <div className="flex">
-                        <span className="text-muted-foreground mr-2">Females:</span>
+                        <span className="text-muted-foreground mr-1">Females:</span>
                         <span>{selectedEvent.participantCounts.totalFemales}</span>
                       </div>
                     </div>

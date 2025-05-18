@@ -75,48 +75,52 @@ export function TipTapEditor({
   
     const handleDrop = async (event: DragEvent) => {
       event.preventDefault()
+      event.stopPropagation(); // Prevent default browser behavior for drops
   
       const file = event.dataTransfer?.files?.[0]
       if (!file || !file.type.startsWith("image/")) return
-  
-      // Insert temporary placeholder
-      const placeholderUrl = "/placeholder.svg"
-      editor.chain().focus().setImage({ src: placeholderUrl }).run()
   
       const formData = new FormData()
       formData.append("file", file)
       formData.append("type", "blogposts")
   
+      const uploadToastId = toast.loading("Uploading dropped image...");
       try {
         const res = await axios.post("/api/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         const url = res.data.url
   
-        // Replace the placeholder image
-        editor.commands.deleteSelection()
-        editor.chain().focus().setImage({ src: url }).run()
-        editor?.chain().focus().run();
+        editor.chain().focus().setImage({ src: url }).run();
+        // Ensure a new paragraph is available after the image for continued typing
+        editor.chain().createParagraphNear().focus().run();
+        
+        toast.success("Image dropped and added!", { id: uploadToastId });
       } catch (err) {
         console.error("Drag upload failed", err)
-        alert("Upload failed.")
+        toast.error("Failed to upload dropped image.", { id: uploadToastId });
       }
     }
   
-    const el = document.querySelector(".ProseMirror")
-    el?.addEventListener("drop", handleDrop as unknown as EventListener)
+    const editorElement = editor.view.dom; // Use editor's root DOM element
+    editorElement.addEventListener("drop", handleDrop as unknown as EventListener);
+
+    // Prevent default dragover behavior to enable drop
+    const handleDragOver = (event: DragEvent) => {
+      event.preventDefault();
+    };
+    editorElement.addEventListener("dragover", handleDragOver as unknown as EventListener);
   
     return () => {
-      el?.removeEventListener("drop", handleDrop as unknown as EventListener)
+      editorElement.removeEventListener("drop", handleDrop as unknown as EventListener);
+      editorElement.removeEventListener("dragover", handleDragOver as unknown as EventListener);
     }
   }, [editor])
 
-  const handleImageUpload = () => {
+  const handleImageUpload = async () => {
     const input = document.createElement("input")
     input.type = "file"
     input.accept = "image/*"
-    input.click()
-  
     input.onchange = async () => {
       const file = input.files?.[0]
       if (!file) return
@@ -125,23 +129,27 @@ export function TipTapEditor({
       formData.append("file", file)
       formData.append("type", "blogposts")
   
+      const uploadToastId = toast.loading("Uploading image...");
       try {
-        toast.loading("Uploading image...")
         const res = await axios.post("/api/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         const url = res.data.url
         console.log("Uploaded image URL:", url);
-        editor?.chain().focus().setImage({ src: url }).run()
-        editor?.chain().focus().insertContent('<p><br></p><p><br></p><p><br></p><p><br></p><p><br></p>').run()
-        editor?.chain().focus().run()
-        console.log("setImage called in TipTapEditor")
-        toast.success("Image added to your content")
+
+        if (editor) {
+          editor.chain().focus().setImage({ src: url }).run();
+          // Create a new paragraph after the image and focus on it
+          editor.chain().createParagraphNear().focus().run();
+        }
+        
+        toast.success("Image added to your content", { id: uploadToastId });
       } catch (err) {
         console.error("Upload error:", err)
-        toast.error("Failed to upload image")
+        toast.error("Failed to upload image", { id: uploadToastId });
       }
     }
+    input.click();
   }
 
   
@@ -206,46 +214,15 @@ export function TipTapEditor({
         >
           <ListOrdered className="h-4 w-4" />
         </Button>
-        <Button
+        {/* <Button
           variant="ghost"
           size="sm"
           type="button"
           onClick={handleImageUpload} 
-        //   onClick={() => {
-        //     const input = document.createElement("input")
-        //     input.type = "file"
-        //     input.accept = "image/*"
-        //     input.click()
-        
-        //     input.onchange = async () => {
-        //       const file = input.files?.[0]
-        //       if (!file) return
-        
-        //       const formData = new FormData()
-        //       formData.append("file", file)
-        //       formData.append("type", "blogposts") // or "gallery", etc., depending on context
-        
-        //       try {
-        //         const res = await axios.post("/api/upload", formData, {
-        //             headers: { "Content-Type": "multipart/form-data" },
-        //           })
-        //           const url = res.data.url
-        //           editor.chain().focus().setImage({ src: url }).run()
-        //       } catch (err) {
-        //         console.error("Upload error:", err)
-        //         alert("An error occurred.")
-        //       }
-        //     }
-        //   }}
-        //   onClick={() => {
-        //     const url = window.prompt("URL")
-        //     if (url) {
-        //       editor.chain().focus().setImage({ src: url }).run()
-        //     }
-        //   }}
+ 
         >
           <ImageIcon className="h-4 w-4" />
-        </Button>
+        </Button> */}
         <Button
           variant="ghost"
           size="sm"

@@ -27,6 +27,7 @@ import { MultiFileUploader } from '../../components/multi-file-upload';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { invalidateGalleryCache } from '@/lib/galleryDataCache'; // Import the cache invalidation function
 
 // Interface for existing images passed as initial data
 interface ExistingImage {
@@ -307,8 +308,17 @@ export default function Gallerywizard({ availableTags, galleryId: initialGallery
         try {
             await axios.delete(`/api/gallery/${galleryId}`);
             toast.success("Gallery deleted successfully!");
-            router.push("/protected/gallery"); // Redirect after delete
-            // Invalidate gallery list cache if implemented
+            
+            // Invalidate the gallery list cache before redirecting
+            try {
+                 invalidateGalleryCache();
+                console.log("Frontend: Gallery list cache invalidated.");
+            } catch (cacheError) {
+                console.error("Frontend: Failed to invalidate gallery cache:", cacheError);
+                toast.error("Could not refresh gallery list automatically, please refresh the page.");
+            }
+
+            router.push("/protected/gallery"); 
         } catch (error: any) {
             console.error(`Frontend: Failed to delete gallery ${galleryId}:`, error);
             toast.error(error.response?.data?.error || "Failed to delete gallery.");
