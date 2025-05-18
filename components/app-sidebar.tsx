@@ -173,15 +173,15 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       <SidebarFooter>
       <SidebarMenuButton className="text-sidebar-foreground/70 mt-8">
               <Link href="https://bexoni.com" target="_blank">
-                  <span className="text-bexoni">
+                  <span className="text-bexoni text-xs">
                   Powered by Bexoni Labs</span>
               </Link>
         </SidebarMenuButton>
         <div>
         <Card className="border-2 border-bexoni">
-            <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-sm text-bexoni">Need to Create Invoices and Receipts?</CardTitle>
-              <CardDescription>Try out our new Invoice and Receipts platform <Link href="https://lancefortes.com/" target="_blank" className="text-bexoni">Lancefortes</Link></CardDescription>
+            <CardHeader className="p-4 ">
+              <CardTitle className="text-xs text-bexoni">Need to Create Invoices and Receipts?</CardTitle>
+              <CardDescription className="text-xs">Try out our new Invoice and Receipts platform <Link href="https://lancefortes.com/" target="_blank" className="text-bexoni text-xs">Lancefortes</Link></CardDescription>
             </CardHeader>
           </Card>
         </div>

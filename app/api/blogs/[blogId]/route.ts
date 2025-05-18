@@ -64,9 +64,12 @@ export async function GET(
 }
 
 export async function DELETE(
-    req: NextRequest,
-    { params }: { params: { blogId: string } }
+  req: NextRequest, 
+  context: any
 ) {
+
+  const { params } = context;
+  const { blogId } = params;
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -74,7 +77,6 @@ export async function DELETE(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { blogId } = params;
 
     if (!blogId) {
         return NextResponse.json({ error: "Blog ID is missing" }, { status: 400 });
