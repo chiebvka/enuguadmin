@@ -118,6 +118,48 @@ export type Database = {
           },
         ]
       }
+      event_guest: {
+        Row: {
+          created_at: string
+          email: string | null
+          event_id: string | null
+          event_participant_id: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          event_id?: string | null
+          event_participant_id?: string | null
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          event_id?: string | null
+          event_participant_id?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_guest_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_guest_event_participant_id_fkey"
+            columns: ["event_participant_id"]
+            isOneToOne: false
+            referencedRelation: "event_participant"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_participant: {
         Row: {
           adult: number | null

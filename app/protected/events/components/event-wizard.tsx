@@ -16,6 +16,7 @@ import {
   FileText,
   Loader2,
   Users,
+  Download,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,6 +50,11 @@ import {
 import { Pagination } from "@/components/pagination"; // Import the reusable Pagination component
 import { getCachedEvents, invalidateEventsCache, CachedEvent as OriginalCachedEvent } from '@/lib/eventDataCache'; // Import cache functions
 
+import jsPDF from 'jspdf';
+import { applyPlugin } from 'jspdf-autotable';
+
+applyPlugin(jsPDF); // Apply jspdf-autotable plugin
+
 // Define the structure for participant counts
 type EventParticipantCounts = {
   totalAttendees: number;
@@ -61,6 +67,11 @@ type EventParticipantCounts = {
 // Extend the OriginalCachedEvent type
 export type CachedEvent = OriginalCachedEvent & {
   participantCounts?: EventParticipantCounts | null;
+};
+
+type EventGuest = {
+  name: string | null;
+  email: string | null;
 };
 
 export default function RefinedEventsDashboard({ initialEvents = [] }: { initialEvents: CachedEvent[] }) {
@@ -91,6 +102,7 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
   const [eventToDelete, setEventToDelete] = useState<CachedEvent | null>(null); // Use CachedEvent
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false); // New state for form submission
+  const [isDownloadingParticipants, setIsDownloadingParticipants] = useState(false); // New state for PDF download
 
   // Utility functions for date filtering
   // These will now be used within useEffect, ensuring client-side execution
@@ -345,6 +357,64 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
     }
   }
 
+  const downloadEventParticipantsPDF = async (event: CachedEvent | null) => {
+    if (!event || !event.id) {
+      toast.error("No event selected or event ID missing.");
+      return;
+    }
+  
+    setIsDownloadingParticipants(true);
+    try {
+      const response = await axios.get(`/api/events/${event.id}/guests`);
+      const participants: EventGuest[] = response.data;
+  
+      if (!participants || participants.length === 0) {
+        toast.info("No Participants Registered", { description: "There are no registered participants for this event to download." });
+        setIsDownloadingParticipants(false);
+        return;
+      }
+  
+      const doc = new jsPDF();
+      const eventDateStr = event.event_date ? formatDate(new Date(event.event_date)) : 'N/A';
+      const eventName = event.name || 'Unnamed Event';
+  
+      doc.setFontSize(18);
+      doc.text(`Participants List: ${eventName}`, 14, 22);
+      doc.setFontSize(12);
+      doc.text(`Event Date: ${eventDateStr}`, 14, 30);
+  
+      const tableColumn = ["Name", "Email"];
+      const tableRows: (string | null)[][] = [];
+  
+      participants.forEach(p => {
+        const participantData = [
+          p.name || 'N/A',
+          p.email || 'N/A',
+        ];
+        tableRows.push(participantData);
+      });
+  
+      (doc as any).autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40, 
+        theme: 'striped',
+        headStyles: { fillColor: [34, 139, 34] }, // Green header
+      });
+      
+      const safeEventName = eventName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      const safeEventDate = event.event_date ? event.event_date.split('T')[0].replace(/-/g, '') : 'nodate';
+      doc.save(`event_participants_${safeEventName}_${safeEventDate}.pdf`);
+      toast.success("Participants PDF Downloaded", { description: "The list has been successfully downloaded."});
+  
+    } catch (error: any) {
+      console.error("Error downloading event participants PDF:", error);
+      const errorMessage = error.response?.data?.error || error.message || "Failed to download participants list.";
+      toast.error("Download Failed", { description: errorMessage });
+    } finally {
+      setIsDownloadingParticipants(false);
+    }
+  };
 
   return (
     <>
@@ -941,6 +1011,21 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
                         <span>{selectedEvent.participantCounts.totalFemales}</span>
                       </div>
                     </div>
+                  </div>
+                  {/* Download Button */}
+                  <div className="mt-3 mb-4">
+                    <Button
+                      onClick={() => downloadEventParticipantsPDF(selectedEvent)}
+                      disabled={isDownloadingParticipants || !selectedEvent?.id}
+                      className="w-full flex items-center justify-center bg-green-600 hover:bg-green-700"
+                    >
+                      {isDownloadingParticipants ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="mr-2 h-4 w-4" />
+                      )}
+                      Download Participants List
+                    </Button>
                   </div>
                 </>
               )}

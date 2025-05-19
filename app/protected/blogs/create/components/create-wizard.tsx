@@ -188,7 +188,7 @@ export default function Createwizard({ blogId: initialBlogId, initialBlogData, a
       } else {
         missingItems.push("At least 1 Tag");
       }
-      if (wordCount < 50) missingItems.push("Minimum 50 words of Content")
+      if (wordCount < 10) missingItems.push("Minimum 50 words of Content")
     
       if (missingItems.length > 0) {
         toast.warning(`Please complete the following: ${missingItems.join(", ")}`)
@@ -244,7 +244,7 @@ export default function Createwizard({ blogId: initialBlogId, initialBlogData, a
        // If there's at least one tag, grant the full 15% for tags.
       if (tags.length > 0) percentage += 15; 
        // Assuming content needs a minimum word count for completion
-       if (wordCount >= 50) {
+       if (wordCount >= 10) {
         percentage += 50;
       } else {
         percentage += Math.floor((wordCount / 50) * 50); // scale up to 50%
