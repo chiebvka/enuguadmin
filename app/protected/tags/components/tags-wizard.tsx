@@ -288,7 +288,7 @@ export default function Tagswizard({ initialTags }: Props) {
          {/* Button to clear selection and potentially reveal the Add Tag form */}
          {/* Only show this button if a tag is currently selected */}
          {selectedTagId && (
-            <Button variant="outline" className="bg-green-50 hover:bg-green-100" onClick={() => setSelectedTagId(null)} disabled={isLoading}>
+            <Button  className="" onClick={() => setSelectedTagId(null)} disabled={isLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add New Tag
             </Button>
@@ -330,7 +330,7 @@ export default function Tagswizard({ initialTags }: Props) {
                                 <div
                                     key={tag.id}
                                     className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-muted/50 ${
-                                    selectedTagId === tag.id ? "bg-green-50 border border-green-200" : ""
+                                    selectedTagId === tag.id ? " border border-green-200" : ""
                                     } ${isLoading ? 'pointer-events-none opacity-60' : ''}`}
                                     onClick={() => setSelectedTagId(tag.id)}
                                 >

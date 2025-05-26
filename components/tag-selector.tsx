@@ -101,7 +101,7 @@ export function TagSelector({ selectedTags, onChange, availableTags, disabled }:
           <Button
             variant="outline"
             size="sm"
-            className="h-8 border-dashed border-green-300 text-green-700 bg-green-50 hover:bg-green-100 hover:text-green-800"
+            className="h-8 border-dashed border-green-300 text-green-50 bg-green-600 hover:bg-green-100 hover:text-green-800"
             disabled={disabled}
           >
              {/* No loader for fetching here, parent manages loading */}

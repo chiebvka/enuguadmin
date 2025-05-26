@@ -501,7 +501,7 @@ Membership Team`);
   
         {/* Stats Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card className="bg-white">
+          <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
                 <p className="text-xs sm:text-sm text-muted-foreground">Total Applications</p>
@@ -513,7 +513,7 @@ Membership Team`);
             </CardContent>
           </Card>
   
-          <Card className="bg-white">
+          <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
                 <p className="text-xs sm:text-sm text-muted-foreground">Approved Members</p>
@@ -525,7 +525,7 @@ Membership Team`);
             </CardContent>
           </Card>
   
-          <Card className="bg-white">
+          <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
                 <p className="text-xs sm:text-sm text-muted-foreground">Declined Requests</p>
@@ -537,7 +537,7 @@ Membership Team`);
             </CardContent>
           </Card>
 
-          <Card className="bg-white">
+          <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col">
                 <p className="text-xs sm:text-sm text-muted-foreground">Blocked Members</p>
@@ -561,7 +561,7 @@ Membership Team`);
             />
           </div>
         ) : loading ? (
-          <Card className="bg-white mb-6">
+          <Card className="mb-6">
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-base sm:text-lg">Membership Applications</CardTitle>
               <CardDescription className="text-xs sm:text-sm">Loading chart data...</CardDescription>
@@ -571,7 +571,7 @@ Membership Team`);
             </CardContent>
           </Card>
         ) : (
-           <Card className="bg-white mb-6">
+           <Card className=" mb-6">
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-base sm:text-lg">Membership Applications</CardTitle>
             </CardHeader>
@@ -617,11 +617,11 @@ Membership Team`);
             paginatedMembers.map((item: Member) => (
               <Card
                 key={item.id}
-                className={`bg-white overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer ${
-                  activeView === 'approved' ? 'hover:bg-green-50' : 
-                  activeView === 'pending' ? 'hover:bg-yellow-50' :
-                  activeView === 'declined' ? 'hover:bg-red-50' :
-                  activeView === 'blocked' ? 'hover:bg-orange-50' : ''
+                className={`overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer ${
+                  activeView === 'approved' ? 'hover:opacity-70' : 
+                  activeView === 'pending' ? 'hover:opacity-70' :
+                  activeView === 'declined' ? 'hover:opacity-70' :
+                  activeView === 'blocked' ? 'hover:opacity-70' : ''
                 }`}
                 onClick={() => toggleExpand(item.id)}
               >
@@ -638,7 +638,7 @@ Membership Team`);
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                           <h3 className="font-medium text-sm sm:text-base">{getDisplayName(item)}</h3>
                           {activeView === "approved" && item.member_no && (
-                            <Badge variant="outline" className="bg-green-50 text-xs px-1.5 py-0.5 self-start sm:self-center">
+                            <Badge variant="outline" className="bg-green-100 dark:bg-green-900/30 dark:text-green-400 text-xs px-1.5 py-0.5 self-start sm:self-center">
                               {item.member_no}
                             </Badge>
                           )}

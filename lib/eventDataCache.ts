@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 export interface CachedEvent {
   id: string;
   name: string;
+  created_at: string;
   event_date: string;
   start_time: string;
   end_time: string;

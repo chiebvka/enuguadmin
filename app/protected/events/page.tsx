@@ -15,7 +15,6 @@ async function fetchEvents() {
 
 export default async function EventsPage() {
   const events = await fetchEvents()
-  console.log(`Here are the events: ${events}`)
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <Eventwizard initialEvents={events} />

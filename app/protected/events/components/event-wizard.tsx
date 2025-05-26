@@ -52,6 +52,7 @@ import { getCachedEvents, invalidateEventsCache, CachedEvent as OriginalCachedEv
 
 import jsPDF from 'jspdf';
 import { applyPlugin } from 'jspdf-autotable';
+import { format } from 'date-fns'; // Import date-fns format function
 
 applyPlugin(jsPDF); // Apply jspdf-autotable plugin
 
@@ -279,6 +280,7 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
     id: "",
     name: "",
     event_date: "",
+    created_at: "",
     start_time: "",
     end_time: "",
     venue: "",
@@ -295,6 +297,7 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
         id: selectedEvent.id,
         name: selectedEvent.name,
         event_date: selectedEvent.event_date,
+        created_at: selectedEvent.created_at,
         start_time: selectedEvent.start_time,
         end_time: selectedEvent.end_time,
         venue: selectedEvent.venue,
@@ -310,6 +313,7 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
     id: "",
     name: "",
     event_date: "",
+    created_at: "",
     start_time: "",
     end_time: "",
     venue: "",
@@ -422,7 +426,7 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
       {/* This assumes the sidebar components are not the primary source of hydration issues */}
       {/* If sidebar or main layout causes issues, they might need similar handling or different structures */}
         <div className="flex-1 flex flex-col overflow-hidden ">
-        <header className="border-b bg-white p-4 flex items-center justify-end">
+        <header className="border-b p-4 flex items-center justify-end">
             <div className="flex items-center gap-2">
 
               <Button onClick={() => setIsCreatingEvent(true)} className="bg-green-600 hover:bg-green-700">
@@ -772,7 +776,9 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
                         </CardContent>
                         <CardFooter className="pt-0 flex justify-between">
                             {/* Created on date could also benefit from a client-side check if it's dynamic */}
-                            <div className="text-xs text-muted-foreground">Created on May 1, 2025</div>
+                            <div className="text-xs text-muted-foreground">
+                              Created on {event.created_at ? format(new Date(event.created_at), 'MMM dd yyyy') : 'N/A'}
+                            </div>
                             <Button
                             variant="ghost"
                             size="sm"
@@ -866,7 +872,7 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {pastEventsToShow.length > 0 ? (
+                          {pastEventsToShow.length > 0 ? ( 
                             pastEventsToShow.map((event) => (
                               <tr key={event.id} className="hover:bg-enugu/20">
                                 <td className="px-4 py-3">
@@ -895,7 +901,7 @@ export default function RefinedEventsDashboard({ initialEvents = [] }: { initial
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-enugu hover:text-indigo-900"
+                                    className="text-enugu hover:bg-enugu/20"
                                     onClick={() => handleViewEventDetails(event)}
                                   >
                                     Details

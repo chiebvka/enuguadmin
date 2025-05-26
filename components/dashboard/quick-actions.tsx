@@ -18,7 +18,7 @@ export default function Quickactions({}: Props) {
           <CardTitle className="text-base font-medium">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-row gap-2 flex-wrap pb-4">
-          <Button size="sm" className="flex-grow sm:flex-grow-0 items-center justify-center bg-[#006400] hover:bg-[#004d00]" asChild>
+          <Button size="sm" className="flex-grow sm:flex-grow-0 items-center justify-center bg-[#006400] text-white hover:bg-[#004d00]" asChild>
             <Link href="/protected/members" className="flex items-center gap-1.5">
               <UserPlus className="h-4 w-4 " />
               <span>Manage Members</span>
@@ -30,13 +30,13 @@ export default function Quickactions({}: Props) {
               <span>Add Event</span>
             </Link>
           </Button>
-          <Button size="sm" className="flex-grow sm:flex-grow-0 items-center justify-center" asChild>
+          <Button size="sm" className="flex-grow sm:flex-grow-0 items-center text-white justify-center" asChild>
             <Link href="/protected/blogs/create" className="flex items-center gap-1.5">
               <PenSquare className="h-4 w-4" />
               <span>Add Blog</span>
             </Link>
           </Button>
-          <Button size="sm" className="flex-grow sm:flex-grow-0 items-center justify-center" asChild>
+          <Button size="sm" className="flex-grow sm:flex-grow-0 items-center text-white justify-center" asChild>
             <Link href="/protected/gallery/add" className="flex items-center gap-1.5">
               <ImageIcon className="h-4 w-4" />
               <span>Add Gallery</span>

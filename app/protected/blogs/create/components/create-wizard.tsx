@@ -337,7 +337,7 @@ export default function Createwizard({ blogId: initialBlogId, initialBlogData, a
                       className="text-xl border-green-200 focus-visible:ring-green-500"
                       required
                     />
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-green-600 dark:text-green-200">
                       <p>A good title should:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Be clear and concise</li>
@@ -350,7 +350,7 @@ export default function Createwizard({ blogId: initialBlogId, initialBlogData, a
                   <div className="space-y-2">
                     <Label className="text-lg">Cover Image</Label>
                     <FileUploader onChange={setCoverImage} value={coverImage} uploadType="blogCovers" />
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-green-600 dark:text-green-200">
                       <p>Your cover image:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Should be at least 1200 x 630 pixels</li>
@@ -364,7 +364,7 @@ export default function Createwizard({ blogId: initialBlogId, initialBlogData, a
                   <div className="space-y-2">
                     <Label className="text-lg">Tags</Label>
                     <TagSelector selectedTags={tags} onChange={setTags} availableTags={availableTags} />
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-green-600 dark:text-green-200">
                       <p>Tags help readers find your content:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Choose at least 1 relevant tag </li>
@@ -380,16 +380,16 @@ export default function Createwizard({ blogId: initialBlogId, initialBlogData, a
                     <TipTapEditor
                       content={content}
                       onChange={handleContentChange}
-                      className="min-h-[400px]"
+                      className="min-h-[400px] border-green-600 focus-visible:ring-green-500"
                       placeholder="Start writing your blog post here..."
                     />
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-green-600 dark:text-green-200">
                       <p>Writing effective content:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
+                        <li>A minimum of 10 words is required to publish a project or news post</li>
                         <li>Start with a compelling introduction</li>
                         <li>Break content into sections with subheadings</li>
                         <li>Use short paragraphs and simple language</li>
-                        <li>Include images or media to enhance your points</li>
                         <li>End with a clear conclusion or call to action</li>
                       </ul>
                     </div>
