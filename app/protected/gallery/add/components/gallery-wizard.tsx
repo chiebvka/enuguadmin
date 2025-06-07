@@ -127,41 +127,48 @@ export default function Gallerywizard({ availableTags, galleryId: initialGallery
         // --- Step 1: Upload NEW Files (only if creating or if new files were added in edit mode) ---
         let uploadedMediaForNewFiles: { url: string; key: string; alt_text?: string }[] = [];
         if (mediaFiles.length > 0) {
-            const uploadPromises: Promise<void>[] = [];
             toast.info(`Starting upload of ${mediaFiles.length} new files...`);
             console.log(`Frontend: Starting upload for ${mediaFiles.length} new files.`);
 
-            for (const file of mediaFiles) {
-                const formData = new FormData();
-                formData.append("file", file);
-                formData.append("type", "gallery"); // Set upload type to 'gallery'
+            const uploadPromises = mediaFiles.map(async (file) => {
+                try {
+                    // 1. Get presigned URL from our new API route
+                    const presignedResponse = await axios.post('/api/upload/presigned-url', {
+                        fileName: file.name,
+                        contentType: file.type,
+                        folder: 'gallery',
+                    });
+                    const { presignedUrl, url: publicUrl, key } = presignedResponse.data;
 
-                uploadPromises.push(
-                    axios.post("/api/upload", formData, {
-                        headers: { "Content-Type": "multipart/form-data" },
-                    })
-                    .then(res => {
-                        // Use title as basic alt text for now, can be enhanced later
-                        uploadedMediaForNewFiles.push({ 
-                            url: res.data.url, 
-                            key: res.data.key, // Store the key
-                            alt_text: title 
-                        }); 
-                        console.log(`Frontend: Uploaded ${file.name}: ${res.data.url} (key: ${res.data.key})`);
-                    })
-                    .catch(err => {
-                        console.error(`Frontend: Failed to upload ${file.name}:`, err);
-                        // Throw error to stop Promise.all if one fails
-                        throw new Error(`Failed to upload ${file.name}. ${err.response?.data?.error || err.message}`); 
-                    })
-                );
-            }
+                    // 2. Upload file directly to R2 using the presigned URL
+                    await axios.put(presignedUrl, file, {
+                        headers: { 'Content-Type': file.type },
+                    });
+                    
+                    console.log(`Frontend: Uploaded ${file.name}: ${publicUrl} (key: ${key})`);
+                    
+                    // Return data to be collected after Promise.all
+                    return {
+                        url: publicUrl,
+                        key: key,
+                        alt_text: title,
+                    };
+                } catch (err: any) {
+                    console.error(`Frontend: Failed to upload ${file.name}:`, err);
+                    const errorMessage = err.response?.data?.error || err.message || `Failed to upload ${file.name}.`;
+                    // Throw error to stop Promise.all if one fails
+                    throw new Error(errorMessage);
+                }
+            });
 
             try {
-                await Promise.all(uploadPromises);
+                // Promise.all will return an array of the resolved values from the promises
+                const results = await Promise.all(uploadPromises);
+                uploadedMediaForNewFiles = results;
                 toast.success("New files uploaded successfully!");
                 console.log("Frontend: New file uploads complete.");
-            } catch (error: any) {
+            } catch (error: any)
+             {
                 console.error("Frontend: Error during new file upload:", error);
                 toast.error(error.message || "An error occurred during file upload.");
                 setIsSubmitting(false);
@@ -531,12 +538,25 @@ export default function Gallerywizard({ availableTags, galleryId: initialGallery
                                                     }`}
                                                 >
                                                     {isExisting ? (
-                                                        <Image
-                                                            src={item.data.image_url || "/placeholder.svg"}
-                                                            alt={item.data.alt_text || item.data.image_url || 'Gallery image'}
-                                                            fill className="object-cover"
-                                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                                        />
+                                                        mediaType === 'video' ? (
+                                                            <video
+                                                                src={item.data.image_url || ""}
+                                                                controls
+                                                                className="w-full h-full object-cover bg-black"
+                                                                playsInline
+                                                                muted
+                                                                loop
+                                                            >
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                        ) : (
+                                                            <Image
+                                                                src={item.data.image_url || "/placeholder.svg"}
+                                                                alt={item.data.alt_text || item.data.image_url || 'Gallery image'}
+                                                                fill className="object-cover"
+                                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                                            />
+                                                        )
                                                     ) : item.data.type.startsWith('image/') ? (
                                                         <Image
                                                             src={URL.createObjectURL(item.data)}
