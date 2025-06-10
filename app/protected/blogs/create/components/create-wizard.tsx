@@ -349,7 +349,17 @@ export default function Createwizard({ blogId: initialBlogId, initialBlogData, a
 
                   <div className="space-y-2">
                     <Label className="text-lg">Cover Image</Label>
-                    <FileUploader onChange={setCoverImage} value={coverImage} uploadType="blogCovers" />
+                    <FileUploader 
+                      onChange={(file) => {
+                        if (file) {
+                          setCoverImage(file.url);
+                        } else {
+                          setCoverImage(null);
+                        }
+                      }} 
+                      value={coverImage} 
+                      uploadType="blogCovers" 
+                    />
                     <div className="text-sm text-green-600 dark:text-green-200">
                       <p>Your cover image:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
