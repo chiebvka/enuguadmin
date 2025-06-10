@@ -1,28 +1,41 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useActionState, useEffect, useState } from 'react';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { signInAction } from "@/app/actions"
-import { FormMessage, type Message } from "@/components/form-message"
+
+import { Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button"
 import Link from "next/link"
+import { signInAction } from '@/app/actions';
+import { toast } from 'sonner';
 
 interface LoginFormProps extends React.ComponentPropsWithoutRef<"form"> {
   message?: Message;
 }
 
-export default function LoginForm({
-    className,
-    message,
-    ...props
-  }: LoginFormProps) {
+const initialState: Message | undefined = undefined;
 
+export default function LoginForm({
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
+    const [state, formAction] = useActionState(signInAction, initialState);
     const [showPassword, setShowPassword] = useState<boolean>(false)
+
+    useEffect(() => {
+      if (state && "success" in state && state.success) {
+        toast.success(state.success);
+      }
+      if (state && "error" in state && state.error) {
+        toast.error(state.error);
+      }
+      // Potentially clear state here if desired, e.g., by calling a reset function passed from useFormState or setting a local state
+    }, [state]);
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form action={formAction} className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login Admin Panel</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -63,7 +76,6 @@ export default function LoginForm({
         <SubmitButton 
           className="w-full" 
           pendingText="Signing in..."
-          formAction={signInAction}
         >
           Login
         </SubmitButton>
@@ -78,13 +90,7 @@ export default function LoginForm({
             </Link>
         </Button>
       </div>
-      {message && <FormMessage message={message} />}
-      <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <Link href="/sign-up" className="underline underline-offset-4">
-          Sign up
-        </Link>
-      </div>
+      {/* {message && <FormMessage message={message} />} */}
     </form>
   )
 }

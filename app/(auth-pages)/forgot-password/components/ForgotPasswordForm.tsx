@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useActionState, useEffect } from 'react';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,18 +9,27 @@ import { forgotPasswordAction } from "@/app/actions"
 import { FormMessage, type Message } from "@/components/form-message"
 import { SubmitButton } from "@/components/submit-button"
 import Link from "next/link"
+import { toast } from 'sonner';
 
-interface ForgotPasswordFormProps extends React.ComponentPropsWithoutRef<"form"> {
-  message?: Message;
-}
+const initialState: Message | undefined = undefined;
 
 export default function ForgotPasswordForm({
-    className,
-    message,
-    ...props
-  }: ForgotPasswordFormProps) {
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
+  const [state, formAction] = useActionState(forgotPasswordAction, initialState);
+  
+  useEffect(() => {
+    if (state && "success" in state && state.success) {
+      toast.success(state.success);
+    }
+    if (state && "error" in state && state.error) {
+      toast.error(state.error);
+    }
+    // Potentially clear state here if desired, e.g., by calling a reset function passed from useFormState or setting a local state
+  }, [state]);
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form action={formAction} className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Reset Password</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -41,7 +50,6 @@ export default function ForgotPasswordForm({
         <SubmitButton 
           className="w-full" 
           pendingText="Sending reset link..."
-          formAction={forgotPasswordAction}
         >
           Reset Password
         </SubmitButton>
@@ -56,7 +64,6 @@ export default function ForgotPasswordForm({
             </Link>
         </Button>
       </div>
-      {message && <FormMessage message={message} />}
       <div className="text-center text-sm">
         Remember your password?{" "}
         <Link href="/sign-in" className="underline underline-offset-4">

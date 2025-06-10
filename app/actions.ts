@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Message } from "@/components/form-message";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -39,7 +40,7 @@ export const signUpAction = async (formData: FormData) => {
   }
 };
 
-export const signInAction = async (formData: FormData) => {
+export const signInAction = async (prevState: Message | undefined, formData: FormData): Promise<Message> => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const supabase = await createClient();
@@ -50,20 +51,20 @@ export const signInAction = async (formData: FormData) => {
   });
 
   if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+    return { error: error.message };
   }
 
   return redirect("/protected");
 };
 
-export const forgotPasswordAction = async (formData: FormData) => {
+export const forgotPasswordAction = async (prevState: Message | undefined, formData: FormData): Promise<Message> => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
-  const callbackUrl = formData.get("callbackUrl")?.toString();
+  // const callbackUrl = formData.get("callbackUrl")?.toString();
 
   if (!email) {
-    return encodedRedirect("error", "/forgot-password", "Email is required");
+    return { error: "Email is required" };
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -72,22 +73,25 @@ export const forgotPasswordAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.message);
-    return encodedRedirect(
-      "error",
-      "/forgot-password",
-      "Could not reset password",
-    );
+    // return encodedRedirect(
+    //   "error",
+    //   "/forgot-password",
+    //   "Could not reset password",
+    // );
+    return { error: "Could not reset password. " + error.message };
   }
 
-  if (callbackUrl) {
-    return redirect(callbackUrl);
-  }
+  // if (callbackUrl) {
+  //   return redirect(callbackUrl);
+  // }
 
-  return encodedRedirect(
-    "success",
-    "/forgot-password",
-    "Check your email for a link to reset your password.",
-  );
+  return { success: "Check your email for a link to reset your password." };
+
+  // return encodedRedirect(
+  //   "success",
+  //   "/forgot-password",
+  //   "Check your email for a link to reset your password.",
+  // );
 };
 
 export const resetPasswordAction = async (formData: FormData) => {

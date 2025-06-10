@@ -6,7 +6,7 @@ export default async function ForgotPasswordPage(props: { searchParams: Promise<
   const searchParams = await props.searchParams;
   
   return (
-    <div className="grid w-9/12 min-h-svh mx-auto border-2 border-red-500 md:grid-cols-2">
+    <div className="grid w-9/12 min-h-svh mx-auto md:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <a href="#" className="flex items-center gap-2 text-enugu font-medium">
           <img src="/logo.jpeg" alt="logo" className="w-10 h-10" />
@@ -14,7 +14,7 @@ export default async function ForgotPasswordPage(props: { searchParams: Promise<
         </a>
         <div className="flex flex-1 flex-col justify-center gap-4 md:justify-start">
           <div className="w-full max-w-xs">
-            <ForgotPasswordForm message={searchParams} />
+            <ForgotPasswordForm  />
           </div>
         </div>
       </div>

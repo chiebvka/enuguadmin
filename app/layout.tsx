@@ -54,7 +54,6 @@ export default function RootLayout({
               <div className="flex flex-col gap-20 w-full p-5">
                 {children}
               </div>
-              <Toaster />
 
               <footer className="w-full border-t  mt-auto">
                 <div className="flex items-center justify-center mx-auto text-center text-xs gap-8 py-8">
@@ -74,6 +73,7 @@ export default function RootLayout({
               </footer>
             </div>
           </main>
+              <Toaster richColors />
         </ThemeProvider>
       </body>
     </html>

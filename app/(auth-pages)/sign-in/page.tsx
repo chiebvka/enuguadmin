@@ -2,8 +2,7 @@ import { Message } from "@/components/form-message";
 import LoginForm from "./components/LoginForm";
 import Image from "next/image";
 
-export default async function LoginPage(props: { searchParams: Promise<Message> }) {
-  const searchParams = await props.searchParams;
+export default async function LoginPage() {
   
   return (
     <div className="grid w-9/12  min-h-svh mx-auto md:grid-cols-2">
@@ -14,7 +13,7 @@ export default async function LoginPage(props: { searchParams: Promise<Message> 
         </a>
         <div className="flex flex-1 flex-col justify-center gap-4 md:justify-start">
           <div className="w-full max-w-xs">
-            <LoginForm message={searchParams} />
+            <LoginForm  />
           </div>
         </div>
       </div>
