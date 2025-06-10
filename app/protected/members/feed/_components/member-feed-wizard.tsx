@@ -29,6 +29,13 @@ const postSchema = z.object({
   content: z.string().min(1, "Content is required").max(2000, "Content is too long"),
 });
 
+interface FileUploadResponse {
+    url: string;
+    key: string;
+    fileName: string;
+    fileSizeMb: number;
+}
+
 const acceptOptions = {
   'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.webp'],
   'video/*': ['.mp4', '.mov', '.avi', '.mkv'],
@@ -67,28 +74,18 @@ export default function Memberfeedwizard({ posts: initialPosts }: Memberfeedwiza
     }
   }, [searchParams]);
 
-  const handleFileChange = async (newUrl: string | null) => {
-    if (mediaKey && mediaUrl !== newUrl) {
-      try {
-        await axios.post("/api/upload/delete", { key: mediaKey });
-      } catch (error) {
-        console.warn("Failed to delete old file from R2. It might have already been removed or the key was incorrect.", error);
-      }
+  const handleFileChange = async (fileDetails: FileUploadResponse | null) => {
+    if (fileDetails) {
+        setMediaUrl(fileDetails.url);
+        setMediaKey(fileDetails.key);
+        setFileName(fileDetails.fileName);
+        setFileSizeMb(fileDetails.fileSizeMb);
+    } else {
+        setMediaUrl(null);
+        setMediaKey(null);
+        setFileName(null);
+        setFileSizeMb(null);
     }
-
-    if (!newUrl) {
-      setMediaUrl(null);
-      setMediaKey(null);
-      setFileName(null);
-      setFileSizeMb(null);
-      return;
-    }
-
-    setMediaUrl(newUrl);
-    const keyFromUrl = newUrl.includes("/memberFeed/") ? newUrl.split("/memberFeed/")[1] : newUrl.split("/").pop();
-    setMediaKey(keyFromUrl ? (newUrl.includes("/memberFeed/") ? `memberFeed/${keyFromUrl}` : keyFromUrl) : null);
-    setFileName(newUrl.split("/").pop() || "Uploaded File");
-    setFileSizeMb(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -126,6 +123,7 @@ export default function Memberfeedwizard({ posts: initialPosts }: Memberfeedwiza
         payload.media_url = mediaUrl;
         payload.file_name = fileName;
         payload.file_size_mb = fileSizeMb;
+        payload.media_r2_key = mediaKey;
       } else if (contentType !== "text" && !mediaUrl) {
         toast.error("Media is required for this post type.");
         setLoading(false);

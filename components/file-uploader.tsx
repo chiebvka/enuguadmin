@@ -3,21 +3,30 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
-import { Upload, X, Trash2 } from "lucide-react"
+import { Upload, X, Trash2, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
+import { toast } from "sonner"
+
+interface FileUploadResponse {
+    url: string;
+    key: string;
+    fileName: string;
+    fileSizeMb: number;
+}
 
 interface FileUploaderProps {
-    onChange: (file: string | null) => void
-    value?: File | string | null
+    onChange: (file: FileUploadResponse | null) => void
+    value?: string | null // Keep value as string URL for initial display
     className?: string
     uploadType?: "events" | "blogposts" | "gallery" | "blogCovers" | "memberFeed"
     accept?: string
 }
 
 export function FileUploader({ onChange, value, className, uploadType = "events", accept }: FileUploaderProps) {
-  const [preview, setPreview] = useState<string | null>(typeof value === "string" ? value : null)
+  const [preview, setPreview] = useState<string | null>(value || null)
+  const [fileKey, setFileKey] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false)
   const [removing, setRemoving] = useState(false)
 
@@ -30,6 +39,9 @@ export function FileUploader({ onChange, value, className, uploadType = "events"
     const file = e.target.files?.[0] || null
     if (!file) return
 
+    setUploading(true);
+    const toastId = toast.loading(`Uploading ${file.name}...`);
+
     // Preview image locally temporarily
     const reader = new FileReader()
     reader.onloadend = () => {
@@ -37,66 +49,94 @@ export function FileUploader({ onChange, value, className, uploadType = "events"
     }
     reader.readAsDataURL(file)
 
-    // Upload to R2
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append("type", uploadType)
-
     try {
-      setUploading(true)
-      const res = await axios.post("/api/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      const url = res.data.url
-      onChange(url)
-      setPreview(url)
+        // 1. Get presigned URL
+        const presignedResponse = await axios.post('/api/upload/presigned-url', {
+            fileName: file.name,
+            contentType: file.type,
+            folder: uploadType,
+        });
+
+        const { presignedUrl, url: publicUrl, key } = presignedResponse.data;
+
+        // 2. Upload to R2 via presigned URL
+        await axios.put(presignedUrl, file, {
+            headers: { 'Content-Type': file.type },
+        });
+
+        // 3. Notify parent component
+        const fileDetails: FileUploadResponse = {
+            url: publicUrl,
+            key: key,
+            fileName: file.name,
+            fileSizeMb: file.size / (1024 * 1024),
+        };
+        onChange(fileDetails);
+        setPreview(publicUrl);
+        setFileKey(key);
+        toast.success("File uploaded successfully!", { id: toastId });
+
     } catch (err) {
-      console.error("Upload error:", err)
-      alert("Something went wrong.")
-      setPreview(null)
+        console.error("Upload error:", err);
+        toast.error("Something went wrong during upload.", { id: toastId });
+        setPreview(null); // Clear preview on error
+        onChange(null);
     } finally {
-      setUploading(false)
+        setUploading(false);
     }
   }
 
   // Universal file removal
   const handleRemove = async () => {
-    if (!preview) {
+    // Prefer the key stored in state, but fall back to extracting from URL if needed
+    // This covers cases where the component is initialized with a `value` URL
+    const keyToDelete = fileKey || (preview ? preview.split(`/${uploadType}/`)[1] : null);
+
+    if (!keyToDelete) {
+      toast.error("Could not determine file to delete.");
+      // Still clear the component state
       onChange(null)
       setPreview(null)
+      setFileKey(null)
       return
     }
-    // Extract the key from the URL
-    let key = preview.split("/").slice(-2).join("/")
-    // If your structure is e.g. .../memberFeed/filename, .../gallery/filename, etc.
-    // You may want to use a regex or a more robust method depending on your URL structure
+
     setRemoving(true)
+    const toastId = toast.loading("Removing file...");
     try {
-      await axios.post("/api/upload/delete", { key })
+      await axios.post("/api/upload/delete", { key: keyToDelete })
       onChange(null)
       setPreview(null)
+      setFileKey(null);
+      toast.success("File removed.", { id: toastId });
     } catch (err) {
-      alert("Failed to delete file from storage.")
+      toast.error("Failed to delete file from storage.", { id: toastId });
     } finally {
       setRemoving(false)
     }
   }
 
   useEffect(() => {
-    setPreview(value ? value.toString() : null)
-  }, [value]);
+    setPreview(value || null)
+    if (value) {
+        const keyFromValue = value.includes(`/${uploadType}/`) ? `${uploadType}/${value.split(`/${uploadType}/`)[1]}` : null;
+        setFileKey(keyFromValue);
+    } else {
+        setFileKey(null);
+    }
+  }, [value, uploadType]);
 
   return (
     <div className={`relative ${className}`}>
       {uploading ? (
         <div className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-md">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+          <Loader2 className="h-8 w-8 animate-spin text-green-600" />
           <p className="mt-2 text-sm text-muted-foreground">Uploading...</p>
         </div>
       ) : preview ? (
         <div className="relative rounded-md overflow-hidden border border-dashed border-enugu w-10/12 h-56 mx-auto flex items-center justify-center bg-muted">
           {/* File preview logic */}
-          {preview.match(/\.(jpg|jpeg|png|svg)$/i) ? (
+          {preview.match(/\.(jpg|jpeg|png|svg|gif|webp)$/i) ? (
             <Image src={preview} alt="Preview" fill className="object-contain" />
           ) : preview.match(/\.(pdf)$/i) ? (
             <div className="flex flex-col items-center">
@@ -119,7 +159,7 @@ export function FileUploader({ onChange, value, className, uploadType = "events"
               <span className="text-xs mt-1">Text File</span>
             </div>
           ) : preview.match(/\.(mp4|mov|avi|webm)$/i) ? (
-            <video src={preview} controls className="max-h-24 max-w-32" />
+            <video src={preview} controls className="max-h-full max-w-full" />
           ) : (
             <span className="text-xs">File uploaded</span>
           )}
@@ -127,12 +167,12 @@ export function FileUploader({ onChange, value, className, uploadType = "events"
             type="button"
             variant="destructive"
             size="icon"
-            className="absolute top-2 right-2"
+            className="absolute top-2 right-2 h-7 w-7"
             onClick={handleRemove}
             disabled={removing}
             aria-label="Remove file"
           >
-            <Trash2 className="h-4 w-4" />
+            {removing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
           </Button>
         </div>
       ) : (
@@ -143,10 +183,10 @@ export function FileUploader({ onChange, value, className, uploadType = "events"
               <span className="font-semibold">Click to upload</span> or drag and drop
             </p>
             <p className="text-xs text-muted-foreground">
-              PDF, TXT, DOCX, XLSX, CSV, JPG, PNG, SVG, MP4, etc. (MAX. 2MB)
+              Supports images, videos, and documents
             </p>
           </div>
-          <input type="file" className="hidden" accept={acceptedTypes} onChange={handleFileChange} />
+          <input type="file" className="hidden" accept={acceptedTypes} onChange={handleFileChange} disabled={uploading} />
         </label>
       )}
     </div>

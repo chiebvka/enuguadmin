@@ -2,44 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { deleteFileFromR2 } from "@/lib/r2"; // Assuming r2.ts is in lib
 
-// Helper function to extract R2 key from URL
-// This is a basic implementation. For robustness, store the R2 key separately.
-function extractKeyFromUrl(url: string): string | null {
-  try {
-    const r2PublicUrl = process.env.R2_PUBLIC_URL;
-    const r2Endpoint = process.env.R2_ENDPOINT;
-    const r2Bucket = process.env.R2_BUCKET;
-
-    let baseUrl = "";
-    if (r2PublicUrl) {
-      baseUrl = r2PublicUrl.endsWith('/') ? r2PublicUrl : `${r2PublicUrl}/`;
-    } else if (r2Endpoint && r2Bucket) {
-      const endpoint = r2Endpoint.endsWith('/') ? r2Endpoint : `${r2Endpoint}/`;
-      const bucket = r2Bucket.endsWith('/') ? r2Bucket : `${r2Bucket}/`;
-      baseUrl = `${endpoint}${bucket}`;
-    } else {
-      console.error("R2_PUBLIC_URL or R2_ENDPOINT and R2_BUCKET must be set to extract key from URL");
-      return null;
-    }
-    
-    if (url.startsWith(baseUrl)) {
-      return url.substring(baseUrl.length);
-    }
-    // Fallback for URLs that might not have the full base if only endpoint/bucket is used for baseUrl construction
-    // and the stored URL is just endpoint/bucket/key
-    if (r2Endpoint && r2Bucket && url.includes(`${r2Bucket}/`)) {
-        const keyPart = url.split(`${r2Bucket}/`)[1];
-        if (keyPart) return keyPart;
-    }
-
-    console.warn(`Could not extract key from URL: ${url} with baseUrl: ${baseUrl}`);
-    return null;
-  } catch (error) {
-    console.error("Error extracting R2 key:", error);
-    return null;
-  }
-}
-
+// Helper function to extract R2 key from URL is removed as it's no longer reliable.
+// We will rely on `media_r2_key` stored in the database.
 
 // --- GET Feed Posts (Optional - for fetching later) ---
 // export async function GET(req: NextRequest) {
@@ -84,7 +48,7 @@ export async function POST(req: NextRequest) {
       media_url,    // URL from R2
       file_name,
       file_size_mb,
-      // media_r2_key // Recommended to add this to your table and pass it from client
+      media_r2_key // Recommended to add this to your table and pass it from client
     } = body;
 
     if (!content_type || (content_type !== 'text' && !media_url)) {
@@ -106,7 +70,7 @@ export async function POST(req: NextRequest) {
         media_url,
         file_name,
         file_size_mb,
-        // media_r2_key, // Store this key
+        media_r2_key, // Store this key
       })
       .select()
       .single();
@@ -143,7 +107,7 @@ export async function PUT(req: NextRequest) {
       media_url,    // New URL from R2 if media changed
       file_name,
       file_size_mb,
-      // new_media_r2_key // Recommended
+      new_media_r2_key // Recommended
     } = body;
 
     if (!feed_id) {
@@ -153,7 +117,7 @@ export async function PUT(req: NextRequest) {
     // Fetch the existing post to check for old media to delete
     const { data: existingPost, error: fetchError } = await supabase
       .from("membership_feed")
-      .select("media_url, content_type") // Add media_r2_key if you store it
+      .select("media_url, content_type, media_r2_key") // Add media_r2_key if you store it
       .eq("id", feed_id)
       .single();
 
@@ -167,13 +131,12 @@ export async function PUT(req: NextRequest) {
     if (media_url !== undefined) updatePayload.media_url = media_url; // Can be null to remove media
     if (file_name !== undefined) updatePayload.file_name = file_name;
     if (file_size_mb !== undefined) updatePayload.file_size_mb = file_size_mb;
-    // if (new_media_r2_key !== undefined) updatePayload.media_r2_key = new_media_r2_key;
+    if (new_media_r2_key !== undefined) updatePayload.media_r2_key = new_media_r2_key;
 
 
     // If media_url is being updated (or removed) and there was an old media_url
     if (media_url !== existingPost.media_url && existingPost.media_url && existingPost.content_type !== 'text') {
-      const oldKey = extractKeyFromUrl(existingPost.media_url);
-      // const oldKey = existingPost.media_r2_key; // If you store the key
+      const oldKey = existingPost.media_r2_key; // If you store the key
       if (oldKey) {
         try {
           await deleteFileFromR2(oldKey);
@@ -224,7 +187,7 @@ export async function DELETE(req: NextRequest) {
     // Fetch the post to get media_url for R2 deletion
     const { data: postToDelete, error: fetchError } = await supabase
       .from("membership_feed")
-      .select("media_url, content_type") // Add media_r2_key if you store it
+      .select("media_url, content_type, media_r2_key") // Add media_r2_key if you store it
       .eq("id", feed_id)
       .single();
 
@@ -234,8 +197,7 @@ export async function DELETE(req: NextRequest) {
 
     // If there's media associated, delete it from R2
     if (postToDelete.media_url && postToDelete.content_type !== 'text') {
-      const key = extractKeyFromUrl(postToDelete.media_url);
-      // const key = postToDelete.media_r2_key; // If you store the key
+      const key = postToDelete.media_r2_key; // If you store the key
       if (key) {
         try {
           await deleteFileFromR2(key);
